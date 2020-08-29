@@ -1,0 +1,17 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hy-kube-mainapp-dep
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hy-kube-mainapp
+  template:
+    metadata:
+      labels:
+        app: hy-kube-mainapp
+    spec:
+      containers:
+        - name: hy-kube-mainapp
+          image: tkasu/hy-kube-mainapp:1.03
