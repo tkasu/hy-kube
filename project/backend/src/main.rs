@@ -1,14 +1,14 @@
-use chrono::prelude::*;
-use std::thread::sleep;
-use std::time::Duration;
-use uuid::Uuid;
+#![feature(proc_macro_hygiene, decl_macro)]
+
+#[macro_use] extern crate rocket;
+
+#[get("/")]
+fn index() -> &'static str {
+    "Hello, world!"
+}
 
 fn main() {
-    let id = Uuid::new_v4();
-
-    loop {
-        let now = Utc::now();
-        println!("{:?}: {}", now, id);
-        sleep(Duration::new(5, 0));
-    }
+    rocket::ignite()
+        .mount("/", routes![index])
+        .launch();
 }
