@@ -14,4 +14,4 @@ spec:
     spec:
       containers:
         - name: hy-kube-mainapp
-          image: tkasu/hy-kube-mainapp:1.03
+          image: tkasu/hy-kube-mainapp:ex1.03
