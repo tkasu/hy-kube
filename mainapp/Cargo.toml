@@ -9,3 +9,4 @@ edition = "2018"
 [dependencies]
 chrono = "0.4"
 uuid = { version="0.8", features = ["v4"] }
+rocket = "0.4.5"
