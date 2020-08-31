@@ -4,9 +4,7 @@
 extern crate rocket;
 
 use chrono::prelude::Utc;
-use rocket::handler::{Handler, Outcome};
-use rocket::http::Method;
-use rocket::{Data, Request, Route};
+use rocket::State;
 use std::thread;
 use std::thread::sleep;
 use std::time::Duration;
@@ -16,31 +14,26 @@ fn constant_str_print(s: String) {
     loop {
         let now = Utc::now();
         println!("{:?}: {}", now, s);
-        sleep(Duration::new(5, 0));
+        sleep(Duration::from_secs(5));
     }
 }
 
-#[derive(Clone)]
-struct IdHandler {
+struct AppState {
     id: String,
 }
 
-impl Handler for IdHandler {
-    fn handle<'r>(&self, req: &'r Request, _data: Data) -> Outcome<'r> {
-        let ret_val = self.id.clone();
-        Outcome::from(req, ret_val)
-    }
-}
-
-impl Into<Vec<Route>> for IdHandler {
-    fn into(self) -> Vec<Route> {
-        vec![Route::new(Method::Get, "/", self)]
-    }
+#[get("/")]
+fn get_id(state: State<AppState>) -> String {
+    state.id.clone()
 }
 
 fn launch_web_server(id: String) {
-    let handler = IdHandler { id };
-    rocket::ignite().mount("/", handler).launch();
+    let state = AppState { id };
+
+    rocket::ignite()
+        .mount("/", routes![get_id])
+        .manage(state)
+        .launch();
 }
 
 fn main() {
