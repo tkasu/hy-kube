@@ -30,7 +30,12 @@ kubectl apply -f manifests/deployment.yaml
 ## Check logs
 
 ```
-§ kubectl logs hy-kube-backend-dep-7f8cdf6cf6-4jmch 
+$ kubectl get pods
+NAME                                   READY   STATUS        RESTARTS   AGE
+hy-kube-backend-dep-6444fdd46b-tx4wn   1/1     Running       0          13s
+
+
+§ kubectl logs hy-kube-backend-dep-6444fdd46b-tx4wn 
 Configured for production.
     => address: 0.0.0.0
     => port: 3000
@@ -41,7 +46,9 @@ Configured for production.
     => keep-alive: 5s
     => tls: disabled
 Warning: environment is 'production', but no `secret_key` is configured
+    => [extra] template_dir: "templates/"
 Rocket has launched from http://0.0.0.0:3000
+
 
 ```
 
@@ -50,7 +57,7 @@ Rocket has launched from http://0.0.0.0:3000
 Set port forwarding:
 
 ```
-§ kubectl port-forward hy-kube-backend-dep-7f8cdf6cf6-4jmch 3003:3000
+§ kubectl port-forward hy-kube-backend-dep-6444fdd46b-tx4wn 3003:3000
 
 Forwarding from 127.0.0.1:3003 -> 3000
 Forwarding from [::1]:3003 -> 3000
@@ -60,5 +67,28 @@ Test:
 
 ```
 $ curl localhost:3003
-Hello, world!%  
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>HY-Kubernetes CRUD app!</title>
+</head>
+<body>
+    <h1>Hello Kube!</h1>
+</body>
+</html>%  
+
+$ curl localhost:3003/hello/Tomi
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>HY-Kubernetes CRUD app!</title>
+</head>
+<body>
+    <h1>Hello Tomi!</h1>
+</body>
+</html>% 
 ```

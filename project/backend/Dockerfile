@@ -4,8 +4,10 @@ COPY . .
 RUN cargo install --locked --path .
 
 FROM debian:buster-slim
-COPY --from=builder /usr/src/backend /usr/local/bin/backend
+WORKDIR /usr/app/backend
+COPY --from=builder /usr/src/backend/target/release/backend .
+COPY --from=builder /usr/src/backend/templates/ ./templates/
+COPY --from=builder /usr/src/backend/Rocket.toml ./Rocket.toml
 ENV ROCKET_PORT 8000
 ENV ROCKET_ENV prod
-ENTRYPOINT ["/usr/local/bin/backend/target/release/backend"]
-CMD [""]
+CMD ["./backend"]
