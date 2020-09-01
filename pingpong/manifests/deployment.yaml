@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hy-kube-pingpong-dep
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hy-kube-pingpong
+  template:
+    metadata:
+      labels:
+        app: hy-kube-pingpong
+    spec:
+      containers:
+        - name: hy-kube-pingpong
+          image: tkasu/hy-kube-pingpong:ex1.09
+          imagePullPolicy: Always
+          env:
+            - name: ROCKET_PORT
+              value: "3000"
