@@ -1,12 +1,6 @@
-[package]
-name = "mainapp"
-version = "0.1.0"
-authors = ["Tomi Kasurinen <tomi.kasurinen@solita.fi>"]
-edition = "2018"
+[workspace]
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
-[dependencies]
-chrono = "0.4"
-uuid = { version="0.8", features = ["v4"] }
-rocket = "0.4.5"
+members = [
+    "reader",
+    "writer"
+]

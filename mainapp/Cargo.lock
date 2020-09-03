@@ -376,15 +376,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "mainapp"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "rocket",
- "uuid",
-]
-
-[[package]]
 name = "matches"
 version = "0.1.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -547,6 +538,14 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ca3129af7b92a17112d59ad498c6f81eaf463253766b90396d39ea7a39d6613c"
 dependencies = [
  "rand_core",
+]
+
+[[package]]
+name = "reader"
+version = "0.1.0"
+dependencies = [
+ "rocket",
+ "uuid",
 ]
 
 [[package]]
@@ -813,6 +812,13 @@ name = "winapi-x86_64-pc-windows-gnu"
 version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "712e227841d057c1ee1cd2fb22fa7e5a5461ae8e48fa2ca79ec42cfc1931183f"
+
+[[package]]
+name = "writer"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+]
 
 [[package]]
 name = "yansi"
