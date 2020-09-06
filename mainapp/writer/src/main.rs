@@ -1,6 +1,6 @@
 use chrono::prelude::Utc;
 use std::env;
-use std::fs::{File, OpenOptions};
+use std::fs::OpenOptions;
 use std::io::prelude::*;
 use std::path::Path;
 use std::thread::sleep;
