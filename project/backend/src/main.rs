@@ -10,6 +10,8 @@ use chrono::Duration;
 use chrono::{DateTime, Utc};
 use rocket_contrib::serve::StaticFiles;
 use serde::{Deserialize, Serialize};
+use std::env;
+use std::process;
 use std::borrow::Borrow;
 use std::error::Error;
 use std::fs::OpenOptions;
@@ -20,7 +22,7 @@ use std::thread::{self, sleep};
 const IMAGE_URL: &'static str = "https://picsum.photos/1200";
 const IMAGE_CACHE_PATH: &'static str = "index_image.jpg";
 const IMAGE_STATE_PATH: &'static str = "index_state.json";
-const IMAGE_UPDATE_INTERVAL_SECS: i64 = 10;
+const DEFAULT_IMAGE_UPDATE_INTERVAL_SECS: i64 = 60;
 
 #[derive(Serialize, Deserialize, Debug, Copy, Clone)]
 struct ImageState {
@@ -84,8 +86,8 @@ fn fetch_state() -> Result<ImageState, Box<dyn std::error::Error>> {
     Ok(state)
 }
 
-fn wait_until_update(state: &ImageState) {
-    let next_update = state.next_update(Duration::seconds(IMAGE_UPDATE_INTERVAL_SECS));
+fn wait_until_update(state: &ImageState, image_update_interval: i64) {
+    let next_update = state.next_update(Duration::seconds(image_update_interval));
 
     let current_time = Utc::now();
     let dur_until_update = next_update - current_time;
@@ -126,10 +128,26 @@ fn update_image() -> Result<(), Box<dyn std::error::Error>> {
 
 fn update_image_loop() {
     loop {
+        let image_update_interval: i64 = match env::var("IMAGE_UPDATE_INTERVAL") {
+            Err(_) => {
+                let update_interval = DEFAULT_IMAGE_UPDATE_INTERVAL_SECS;
+                println!("Using default image update interval: {} seconds", update_interval);
+                update_interval
+            }
+            Ok(update_interval) => {
+                let update_interval: i64 = update_interval.parse().unwrap_or_else(|e| {
+                    println!("Failed to parse IMAGE_UPDATE_INTERVAL `{}`: {}", update_interval, e);
+                    process::exit(1);
+                });
+                println!("Using image update interval: {} seconds", update_interval);
+                update_interval
+            },
+        };
+
         let state = fetch_state();
         match state {
             Ok(state) => {
-                wait_until_update(&state);
+                wait_until_update(&state, image_update_interval);
                 println!("Updating image!");
                 let update_res = update_image();
                 match update_res {
