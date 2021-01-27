@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: hy-kube-backend
-          image: tkasu/hy-kube-backend:ex1.08
+          image: tkasu/hy-kube-backend:ex1.12
           imagePullPolicy: Always
           env:
             - name: ROCKET_PORT

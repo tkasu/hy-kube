@@ -6,8 +6,9 @@ RUN cargo install --locked --path .
 FROM debian:buster-slim
 WORKDIR /usr/app/backend
 COPY --from=builder /usr/src/backend/target/release/backend .
-COPY --from=builder /usr/src/backend/templates/ ./templates/
+COPY --from=builder /usr/src/backend/static/ ./static/
 COPY --from=builder /usr/src/backend/Rocket.toml ./Rocket.toml
+RUN apt-get update && apt-get install -y openssl
 ENV ROCKET_PORT 8000
 ENV ROCKET_ENV prod
 CMD ["./backend"]

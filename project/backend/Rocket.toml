@@ -1,5 +1,3 @@
 [development]
-template_dir = "templates/"
 
 [production]
-template_dir = "templates/"
