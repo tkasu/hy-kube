@@ -12,10 +12,23 @@ spec:
       labels:
         app: hy-kube-backend
     spec:
+      volumes:
+        - name: project-volume
+          persistentVolumeClaim:
+            claimName: hy-kube-project-claim
       containers:
         - name: hy-kube-backend
           image: tkasu/hy-kube-backend:ex1.12
           imagePullPolicy: Always
+          volumeMounts:
+            - name: project-volume
+              mountPath: /usr/app/files
           env:
             - name: ROCKET_PORT
               value: "3000"
+            - name: IMAGE_CACHE_PATH
+              value: /usr/app/files/img.jpg
+            - name: IMAGE_STATE_PATH
+              value: /usr/app/files/img_state.json
+            - name: IMAGE_UPDATE_INTERVAL
+              value: "86400" # Seconds in a day

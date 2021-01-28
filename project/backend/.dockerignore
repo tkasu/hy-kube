@@ -1,2 +1,4 @@
 /target
+*/*.jpg
+*/*_state.json
 .idea
