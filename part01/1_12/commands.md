@@ -1,6 +1,6 @@
 # Ex 1.12
 
-## Building mainapp application
+## Building project application
 
 To rebuild the same image, first checkout the correct tag:
 

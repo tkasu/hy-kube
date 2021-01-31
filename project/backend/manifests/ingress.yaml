@@ -1,12 +1,14 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: hy-kube-ingress
+  name: hy-kube-backend-ingress
+  annotations:
+    traefik.ingress.kubernetes.io/rule-type: "PathPrefixStrip"
 spec:
   rules:
     - http:
         paths:
-          - path: /
+          - path: /api/
             backend:
               serviceName: hy-kube-backend-svc
-              servicePort: 2345
+              servicePort: 3456

@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: hy-kube-backend-svc
+  name: hy-kube-frontend-svc
 spec:
   type: ClusterIP
   selector:
-    app: hy-kube-backend
+    app: hy-kube-frontend
   ports:
     - name: http
       protocol: TCP
-      port: 3456
-      targetPort: 3000
+      port: 2345
+      targetPort: 80

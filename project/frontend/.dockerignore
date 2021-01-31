@@ -1,0 +1,7 @@
+node_modules
+build
+.dockerignore
+.env
+.env.loca.development
+.eslintcache
+Dockerfile

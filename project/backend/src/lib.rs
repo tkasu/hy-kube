@@ -8,7 +8,7 @@ use chrono::serde::ts_seconds::deserialize as from_ts;
 use chrono::serde::ts_seconds::serialize as to_ts;
 use chrono::Duration;
 use chrono::{DateTime, Utc};
-use rocket_contrib::serve::StaticFiles;
+use rocket::response::NamedFile;
 use serde::{Deserialize, Serialize};
 use std::borrow::Borrow;
 use std::env;
@@ -160,7 +160,7 @@ fn wait_until_update(state: &ImageState, image_update_interval: i64) {
 }
 
 fn copy_from_cache(image_cache_path: String) -> Result<(), Box<dyn std::error::Error>> {
-    std::fs::copy(image_cache_path, "static/daily_pic.jpg")?;
+    std::fs::copy(image_cache_path, "./public/assets/daily_pic.jpg")?;
     Ok(())
 }
 
@@ -240,8 +240,11 @@ pub fn update_image_loop(config: Config) {
     }
 }
 
+#[get("/daily_photo")]
+fn daily_photo() -> Option<NamedFile> {
+    NamedFile::open("./public/assets/daily_pic.jpg").ok()
+}
+
 pub fn start_web_server() {
-    rocket::ignite()
-        .mount("/", StaticFiles::from("./static"))
-        .launch();
+    rocket::ignite().mount("/", routes![daily_photo]).launch();
 }
