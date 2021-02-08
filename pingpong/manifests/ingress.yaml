@@ -1,7 +1,7 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: hy-kube-ingress
+  name: hy-kube-pingpong-ingress
   annotations:
     traefik.ingress.kubernetes.io/rule-type: "PathPrefixStrip"
 spec:
@@ -11,4 +11,4 @@ spec:
           - path: /pingpong
             backend:
               serviceName: hy-kube-pingpong-svc
-              servicePort: 3567
+              servicePort: 80

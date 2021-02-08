@@ -6,4 +6,5 @@ RUN cargo build --release
 FROM debian:buster-slim
 WORKDIR /usr/app
 COPY --from=builder /usr/src/mainapp/target/release/reader /usr/app/
+RUN apt-get update && apt-get install -y libssl-dev ca-certificates
 CMD ["./reader"]

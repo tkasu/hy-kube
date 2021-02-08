@@ -17,7 +17,7 @@ spec:
           emptyDir: {}
       containers:
         - name: hy-kube-mainapp-reader
-          image: tkasu/hy-kube-mainapp-reader:ex1.10
+          image: tkasu/hy-kube-mainapp-reader:ex2.01
           imagePullPolicy: Always
           volumeMounts:
             - name: timestamps-volume
@@ -27,8 +27,10 @@ spec:
               value: "3000"
             - name: MAINAPP_FILE_PATH
               value: /usr/app/files/timestamps.txt
+            - name: MAINAPP_WRITER_UPDATE_FREQ
+              value: http://hy-kube-pingpong-svc
         - name: hy-kube-mainapp-writer
-          image: tkasu/hy-kube-mainapp-writer:ex1.10
+          image: tkasu/hy-kube-mainapp-writer:ex2.01
           imagePullPolicy: Always
           volumeMounts:
             - name: timestamps-volume

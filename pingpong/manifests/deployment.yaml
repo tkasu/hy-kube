@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: hy-kube-pingpong
-          image: tkasu/hy-kube-pingpong:ex1.09
+          image: tkasu/hy-kube-pingpong:ex2.01
           imagePullPolicy: Always
           env:
             - name: ROCKET_PORT
