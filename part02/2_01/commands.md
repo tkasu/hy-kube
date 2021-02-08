@@ -5,7 +5,7 @@
 To rebuild the same image, first checkout the correct tag:
 
 ```
-git checkout ex1.13
+git checkout ex2.01
 ```
 
 In folder pingpong/
@@ -16,6 +16,10 @@ In folder pingpong/
 
 
 ## Building mainapp application
+
+```
+git checkout ex2.01
+```
 
 In folder mainapp/
 
