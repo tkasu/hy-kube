@@ -56,6 +56,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "aho-corasick"
+version = "0.7.15"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7404febffaa47dac81aa44dba71523c9d069b1bdc50a77db41195149e17f68e5"
+dependencies = [
+ "memchr",
+]
+
+[[package]]
 name = "atty"
 version = "0.2.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -81,6 +90,7 @@ dependencies = [
  "reqwest",
  "rocket",
  "rocket_contrib",
+ "rocket_cors",
  "serde",
  "serde_json",
 ]
@@ -1090,6 +1100,24 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "41cc0f7e4d5d4544e8861606a285bb08d3e70712ccc7d2b84d7c0ccfaf4b05ce"
 
 [[package]]
+name = "regex"
+version = "1.4.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d9251239e129e16308e70d853559389de218ac275b515068abc96829d05b948a"
+dependencies = [
+ "aho-corasick",
+ "memchr",
+ "regex-syntax",
+ "thread_local",
+]
+
+[[package]]
+name = "regex-syntax"
+version = "0.6.22"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b5eb417147ba9860a96cfe72a0b93bf88fee1744b5636ec99ab20c1aa9376581"
+
+[[package]]
 name = "remove_dir_all"
 version = "0.5.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1136,9 +1164,9 @@ dependencies = [
 
 [[package]]
 name = "rocket"
-version = "0.4.5"
+version = "0.4.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6130967b369cfb8411b0b73e96fcba1229c32a9cc6f295d144f879bfced13c6e"
+checksum = "4fc7e5d6aaa32ace6893ae8a1875688ca7b07d6c2428ae88e704c3623c8866e9"
 dependencies = [
  "atty",
  "base64 0.12.3",
@@ -1157,9 +1185,9 @@ dependencies = [
 
 [[package]]
 name = "rocket_codegen"
-version = "0.4.5"
+version = "0.4.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cb852e6da168fb948a8f2b798ba2e2f0e4fc860eae0efa9cf2bf0f5466bb0425"
+checksum = "519154b16df5fe552a8f9cd76a97793a9f5d58e34f186ab79c7b29ce1d009358"
 dependencies = [
  "devise",
  "glob",
@@ -1184,10 +1212,26 @@ dependencies = [
 ]
 
 [[package]]
-name = "rocket_http"
-version = "0.4.5"
+name = "rocket_cors"
+version = "0.5.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1aff5a5480175f2f553a876b251e9350c74196128806d176da3a51c82aab5428"
+checksum = "ea20696dc46308d0ca06222905fe38e02b8e46c087af9c82ea85cdc386271076"
+dependencies = [
+ "log 0.4.11",
+ "regex",
+ "rocket",
+ "serde",
+ "serde_derive",
+ "unicase 2.6.0",
+ "unicase_serde",
+ "url 2.1.1",
+]
+
+[[package]]
+name = "rocket_http"
+version = "0.4.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a9d087de7203c7a60a0ed5cd3a135b552dbfbed9932c52d49d083e8629935257"
 dependencies = [
  "cookie",
  "hyper 0.10.16",
@@ -1388,6 +1432,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "thread_local"
+version = "1.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bb9bc092d0d51e76b2b19d9d85534ffc9ec2db959a2523cdae0697e2972cd447"
+dependencies = [
+ "lazy_static",
+]
+
+[[package]]
 name = "time"
 version = "0.1.43"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1520,6 +1573,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "50f37be617794602aabbeee0be4f259dc1778fabe05e2d67ee8f79326d5cb4f6"
 dependencies = [
  "version_check 0.9.2",
+]
+
+[[package]]
+name = "unicase_serde"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6ef53697679d874d69f3160af80bc28de12730a985d57bdf2b47456ccb8b11f1"
+dependencies = [
+ "serde",
+ "unicase 2.6.0",
 ]
 
 [[package]]

@@ -2,13 +2,18 @@
 
 #[macro_use]
 extern crate rocket;
+extern crate rocket_cors;
 
 use bytes::Bytes;
 use chrono::serde::ts_seconds::deserialize as from_ts;
 use chrono::serde::ts_seconds::serialize as to_ts;
 use chrono::Duration;
 use chrono::{DateTime, Utc};
+use rocket::http::Method;
 use rocket::response::NamedFile;
+use rocket::State;
+use rocket_contrib::json::Json;
+use rocket_cors::{AllowedHeaders, AllowedOrigins, Cors, CorsOptions};
 use serde::{Deserialize, Serialize};
 use std::borrow::Borrow;
 use std::env;
@@ -16,6 +21,7 @@ use std::error::Error;
 use std::fs::OpenOptions;
 use std::io::prelude::*;
 use std::io::BufReader;
+use std::sync::{Arc, Mutex};
 use std::thread::sleep;
 
 const IMAGE_URL: &'static str = "https://picsum.photos/1200";
@@ -110,6 +116,42 @@ impl ImageState {
     fn next_update(self, dur: Duration) -> DateTime<Utc> {
         let next_update = self.last_update.checked_add_signed(dur).unwrap();
         next_update
+    }
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+struct Todo {
+    task: String,
+}
+
+#[derive(Serialize, Clone, Debug)]
+struct TodoList {
+    todos: Vec<Todo>,
+}
+
+#[derive(Debug)]
+struct TodoListBoxed {
+    todos: Arc<Mutex<TodoList>>,
+}
+
+impl TodoListBoxed {
+    fn new() -> Self {
+        let todo_vec: Vec<Todo> = Vec::new();
+        let todo_list = TodoList { todos: todo_vec };
+
+        Self {
+            todos: Arc::new(Mutex::new(todo_list)),
+        }
+    }
+
+    fn get_todos(&self) -> TodoList {
+        let todos = (*self.todos.lock().unwrap()).clone();
+        todos
+    }
+
+    fn add_todo(&self, todo: Todo) {
+        let mut guard = self.todos.lock().unwrap();
+        (*guard).todos.push(todo);
     }
 }
 
@@ -245,6 +287,44 @@ fn daily_photo() -> Option<NamedFile> {
     NamedFile::open("./public/assets/daily_pic.jpg").ok()
 }
 
+#[get("/todos")]
+fn todos(todo_list: State<TodoListBoxed>) -> Json<TodoList> {
+    let todos = todo_list.get_todos();
+    Json(todos)
+}
+
+#[post("/todo", format = "application/json", data = "<todo>")]
+fn new_todo(todo_list: State<TodoListBoxed>, todo: Json<Todo>) -> Json<Todo> {
+    let todo_add = todo.clone();
+    todo_list.add_todo(todo_add);
+    todo
+}
+
+fn get_cors() -> Cors {
+    let allowed_origins = AllowedOrigins::all();
+    let cors = rocket_cors::CorsOptions {
+        allowed_origins,
+        allowed_methods: vec![Method::Get, Method::Post]
+            .into_iter()
+            .map(From::from)
+            .collect(),
+        allowed_headers: AllowedHeaders::some(&["Accept", "Content-Type"]),
+        allow_credentials: true,
+        ..Default::default()
+    }
+    .to_cors()
+    .expect("error creating CORS fairing");
+
+    cors
+}
+
 pub fn start_web_server() {
-    rocket::ignite().mount("/", routes![daily_photo]).launch();
+    let todo_state = TodoListBoxed::new();
+    let cors = get_cors();
+
+    rocket::ignite()
+        .manage(todo_state)
+        .mount("/", routes![daily_photo, todos, new_todo])
+        .attach(cors)
+        .launch();
 }

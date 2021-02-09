@@ -1,4 +1,5 @@
-import React, { useState, Dispatch, SetStateAction } from 'react';
+import axios from 'axios';
+import React, { useState, useEffect, Dispatch, SetStateAction } from 'react';
 import { useForm } from "react-hook-form";
 import { API_URL } from "./utils/config"
 import "./App.css"
@@ -33,7 +34,13 @@ const TodoList: React.FC<TodoListProps> = ({todoContainers}) => {
 const TodoForm: React.FC<TodoFormProps> = ({todoContainers, setTodos}) => {
   const { register, handleSubmit, errors } = useForm<Todo>();
   const onSubmit = (todo: Todo) => {
-    setTodos({"todos": todoContainers.todos.concat(todo)});
+
+    const apiUrl = API_URL + "/todo";
+    axios.post(apiUrl, todo)
+      .then(response => {
+        setTodos({"todos": todoContainers.todos.concat(response.data)});
+      });
+      
   };
 
   const todoMaxLength = 140;
@@ -79,6 +86,16 @@ const DailyImage: React.FC = () => {
 
 function App() {
   const [todos, setTodos] = useState<ITodos>({"todos": []});
+    
+  const todoUpdateHook = () => {
+    const apiUrl = API_URL + "/todos";
+    axios
+      .get(apiUrl)
+      .then(response => {
+        setTodos(response.data)
+      })
+  };
+  useEffect(todoUpdateHook, []);
 
   return (
     <div className="App">
