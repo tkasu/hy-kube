@@ -13,7 +13,7 @@ use rocket::http::Method;
 use rocket::response::NamedFile;
 use rocket::State;
 use rocket_contrib::json::Json;
-use rocket_cors::{AllowedHeaders, AllowedOrigins, Cors, CorsOptions};
+use rocket_cors::{AllowedHeaders, AllowedOrigins, Cors};
 use serde::{Deserialize, Serialize};
 use std::borrow::Borrow;
 use std::env;

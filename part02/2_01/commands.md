@@ -1,4 +1,4 @@
-# Ex 1.13
+# Ex 2.01
 
 ## Building pingpong application
 

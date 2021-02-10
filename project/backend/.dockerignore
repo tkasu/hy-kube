@@ -2,4 +2,4 @@
 */*.jpg
 */*_state.json
 .idea
-public/assets/
+public/assets/*.jpg
