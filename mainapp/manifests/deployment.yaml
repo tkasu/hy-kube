@@ -1,6 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  namespace: mainapp
   name: hy-kube-mainapp-dep
 spec:
   replicas: 1
@@ -17,7 +18,7 @@ spec:
           emptyDir: {}
       containers:
         - name: hy-kube-mainapp-reader
-          image: tkasu/hy-kube-mainapp-reader:ex2.01
+          image: tkasu/hy-kube-mainapp-reader:ex2.03
           imagePullPolicy: Always
           volumeMounts:
             - name: timestamps-volume
@@ -30,7 +31,7 @@ spec:
             - name: MAINAPP_WRITER_UPDATE_FREQ
               value: http://hy-kube-pingpong-svc
         - name: hy-kube-mainapp-writer
-          image: tkasu/hy-kube-mainapp-writer:ex2.01
+          image: tkasu/hy-kube-mainapp-writer:ex2.03
           imagePullPolicy: Always
           volumeMounts:
             - name: timestamps-volume
