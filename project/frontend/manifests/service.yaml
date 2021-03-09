@@ -2,6 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: hy-kube-frontend-svc
+  namespace: hy-kube-project
 spec:
   type: ClusterIP
   selector:

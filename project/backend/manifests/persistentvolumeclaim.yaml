@@ -1,6 +1,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
+  namespace: hy-kube-project
   name: hy-kube-project-claim
 spec:
   storageClassName: manual
