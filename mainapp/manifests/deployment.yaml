@@ -18,24 +18,20 @@ spec:
           emptyDir: {}
       containers:
         - name: hy-kube-mainapp-reader
-          image: tkasu/hy-kube-mainapp-reader:ex2.03
+          image: tkasu/hy-kube-mainapp-reader:ex2.06
           imagePullPolicy: Always
           volumeMounts:
             - name: timestamps-volume
               mountPath: /usr/app/files
-          env:
-            - name: ROCKET_PORT
-              value: "3000"
-            - name: MAINAPP_FILE_PATH
-              value: /usr/app/files/timestamps.txt
-            - name: MAINAPP_WRITER_UPDATE_FREQ
-              value: http://hy-kube-pingpong-svc
+          envFrom:
+            - configMapRef:
+                name: mainapp-configmap
         - name: hy-kube-mainapp-writer
-          image: tkasu/hy-kube-mainapp-writer:ex2.03
+          image: tkasu/hy-kube-mainapp-writer:ex2.06
           imagePullPolicy: Always
           volumeMounts:
             - name: timestamps-volume
               mountPath: /usr/app/files
-          env:
-            - name: MAINAPP_FILE_PATH
-              value: /usr/app/files/timestamps.txt
+          envFrom:
+            - configMapRef:
+                name: mainapp-configmap

@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mainapp-configmap
+  namespace: mainapp
+data:
+  ROCKET_PORT: "3000"
+  MESSAGE: "Hello"
+  MAINAPP_FILE_PATH: "/usr/app/files/timestamps.txt"
+  PINGPONG_APP_URL: "http://hy-kube-pingpong-svc"

@@ -1,9 +1,17 @@
-use writer::loop_write_timestamp_to_file;
+extern crate dotenv;
+
+use dotenv::dotenv;
 use std::env;
 use std::path::Path;
+use writer::loop_write_timestamp_to_file;
 
 fn main() {
-    let polling_freq_s: u64 = env::var("MAINAPP_WRITER_UPDATE_FREQ") .unwrap_or("5".to_string()).parse().unwrap();
+    dotenv().ok();
+
+    let polling_freq_s: u64 = env::var("MAINAPP_WRITER_UPDATE_FREQ")
+        .unwrap_or("5".to_string())
+        .parse()
+        .unwrap();
     let input_path = match env::var("MAINAPP_FILE_PATH") {
         Err(_) => {
             let test_file_path = String::from("test_file_3.txt");

@@ -11,7 +11,7 @@ use std::io::prelude::*;
 use std::io::BufReader;
 use std::path::Path;
 use std::sync::atomic::{AtomicUsize, Ordering};
-use std::sync::mpsc::{channel, Receiver, Sender};
+use std::sync::mpsc::{Receiver, Sender};
 use std::sync::{Arc, Mutex};
 use std::thread::sleep;
 use std::time::Duration;
@@ -19,14 +19,16 @@ use std::time::Duration;
 pub struct AppState {
     id: String,
     latest_input: String,
+    message: String,
 }
 
 impl AppState {
-    pub fn new(id: String) -> Self {
+    pub fn new(id: String, message: String) -> Self {
         let default_msg = String::from("No input yet :(");
 
         AppState {
             id,
+            message,
             latest_input: default_msg,
         }
     }
@@ -126,13 +128,17 @@ pub fn update_and_log(s: String, receiver: Receiver<String>, state: Arc<Mutex<Ap
 }
 
 #[get("/")]
-fn get_id(app_state: State<Arc<Mutex<AppState>>>, ping_state: State<Arc<PingState>>) -> String {
+fn get_default(
+    app_state: State<Arc<Mutex<AppState>>>,
+    ping_state: State<Arc<PingState>>,
+) -> String {
     let app_state = app_state.lock().unwrap();
     let id = &app_state.id.clone();
+    let message = &app_state.message.clone();
     let latest_input = &app_state.latest_input;
     let ping_count = &ping_state.count;
 
-    let mut resp = format!("{} {}", latest_input, id);
+    let mut resp = format!("{}\n{} {}", message, latest_input, id);
     if ping_count.is_some() {
         let ping_count = ping_count.as_ref().unwrap();
         resp.push_str(format!("\nPing / Pongs: {:?}", ping_count).as_str());
@@ -142,7 +148,7 @@ fn get_id(app_state: State<Arc<Mutex<AppState>>>, ping_state: State<Arc<PingStat
 
 pub fn launch_web_server(app_state: Arc<Mutex<AppState>>, ping_state: Arc<PingState>) {
     let r = rocket::ignite()
-        .mount("/", routes![get_id])
+        .mount("/", routes![get_default])
         .manage(app_state)
         .manage(ping_state);
     r.launch();
