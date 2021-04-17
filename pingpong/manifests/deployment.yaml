@@ -2,16 +2,16 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   namespace: mainapp
-  name: hy-kube-pingpong-dep
+  name: pingpong-dep
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: hy-kube-pingpong
+      app: pingpong
   template:
     metadata:
       labels:
-        app: hy-kube-pingpong
+        app: pingpong
     spec:
       containers:
         - name: hy-kube-pingpong

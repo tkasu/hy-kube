@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: mainapp
+  name: pingpong-postgres-config
+  labels:
+    app: pingpong-postgres
+data:
+  POSTGRES_DB: pingpongdb
+  POSTGRES_USER: admin
+
