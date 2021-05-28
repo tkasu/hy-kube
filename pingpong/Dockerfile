@@ -1,4 +1,4 @@
-FROM rustlang/rust:nightly-buster@sha256:ca626ba169b1b720fcdad3c9ebdba1a97ed4cc0cc2ad53f70c456ca4ccd96537 as builder
+FROM rustlang/rust:nightly-buster@sha256:ea6209a005404e7098feff7af1cd5b340fbf20a420ed05000cad21c0b714d044 as builder
 WORKDIR /usr/src/pingpong
 COPY . .
 RUN cargo install --locked --path .
