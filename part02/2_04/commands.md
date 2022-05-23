@@ -26,7 +26,7 @@ In folder project/frontend/
 ## Create cluster
 
 ```
-k3d cluster create --port '8082:30080@agent[0]' -p 8081:80@loadbalancer --agents 2
+k3d cluster create --port 8082:30080@agent:0 -p 8081:80@loadbalancer --agents 2
 ```
 
 ## Init filesystem
@@ -50,7 +50,7 @@ persistentvolume/hy-kube-pv created
 ## Creating the namespace
 
 ```
-kubectl apply -f  manifests_global/hy-kube-project-namespace.yaml
+kubectl apply -f manifests_global/hy-kube-project-namespace.yaml
 
 namespace/hy-kube-project created
 ```
