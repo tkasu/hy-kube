@@ -4,8 +4,6 @@
 
 ```bash
 k # is alias for kubectl 
-
-192.168.99.100 # is my cluster ip, as I'm using virtualbox docker-machine backend (AMD Hackintosh probelms :sadface)
 ```
 
 ## Building mainapp application
@@ -74,13 +72,13 @@ Rocket has launched from http://0.0.0.0:3000
 ```
 
 ```bash
-$ curl 192.168.99.100:8081     
+$ curl localhost:8081
 2020-09-06T10:45:33.758385674Z e8c948ae-ac3e-4987-a977-88bb7498d192% 
 
-$ curl 192.168.99.100:8081
+$ curl localhost:8081
 2020-09-06T10:45:38.759077352Z e8c948ae-ac3e-4987-a977-88bb7498d192%
 
-$ curl 192.168.99.100:8081
+$ curl localhost:8081
 2020-09-06T10:45:43.759429888Z e8c948ae-ac3e-4987-a977-88bb7498d192%
 ```
 
