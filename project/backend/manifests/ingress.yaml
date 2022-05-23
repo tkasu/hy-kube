@@ -1,4 +1,4 @@
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   namespace: hy-kube-project
@@ -9,7 +9,10 @@ spec:
   rules:
     - http:
         paths:
-          - path: /api/
+          - path: /
+            pathType: Prefix
             backend:
-              serviceName: hy-kube-backend-svc
-              servicePort: 3456
+              service:
+                name: hy-kube-backend-svc
+                port:
+                  number: 3456
