@@ -4,8 +4,6 @@
 
 ```bash
 k # is alias for kubectl 
-
-192.168.99.100 # is my cluster ip, as I'm using virtualbox docker-machine backend (AMD Hackintosh probelms :sadface)
 ```
 
 ## Building mainapp application
@@ -25,7 +23,7 @@ In folder mainapp/
 ## Create cluster
 
 ```
-k3d cluster create --port '8082:30080@agent[0]' -p 8081:80@loadbalancer --agents 2
+k3d cluster create --port 8082:30080@agent:0 -p 8081:80@loadbalancer --agents 2
 ```
 
 ## Init filesystem
@@ -71,32 +69,34 @@ hy-kube-mainapp-dep-59758f9d4b-qbrcp   3/3     Running   0          3m5s
 $ k describe ingress
 
 Name:             hy-kube-ingress
+Labels:           <none>
 Namespace:        default
-Address:          172.18.0.4
-Default backend:  default-http-backend:80 (<error: endpoints "default-http-backend" not found>)
+Address:          172.18.0.3,172.18.0.4,172.18.0.5
+Ingress Class:    <none>
+Default backend:  <default>
 Rules:
   Host        Path  Backends
   ----        ----  --------
-  *           
-              /           hy-kube-mainapp-svc:2345 (10.42.2.10:3000)
-              /pingpong   hy-kube-mainapp-svc:3567 (10.42.2.10:4000)
-Annotations:  traefik.ingress.kubernetes.io/rule-type: PathPrefixStrip
+  *
+              /           hy-kube-mainapp-svc:2345 (10.42.1.5:3000)
+              /pingpong   hy-kube-mainapp-svc:3567 (10.42.1.5:4000)
+Annotations:  traefik.ingress.kubernetes.io/router.middlewares: default-strip-prefix@kubernetescrd
 Events:       <none>
 
 ````
 
 ```bash
-$ curl 192.168.99.100:8081 
+$ curl localhost:8081 
 2020-09-07T18:31:19.219171724Z b19a543f-87ce-4c2e-a11b-8d0918be6773
 Ping / Pongs: 0%
 
-$ curl 192.168.99.100:8081/pingpong
+$ curl localhost:8081/pingpong
 pong 0
 
-$ curl 192.168.99.100:8081/pingpong
+$ curl localhost:8081/pingpong
 pong 1%
 
-$ curl 192.168.99.100:8081         
+$ curl localhost:8081         
 2020-09-07T18:31:59.222298082Z b19a543f-87ce-4c2e-a11b-8d0918be6773
 Ping / Pongs: 2
 ```
