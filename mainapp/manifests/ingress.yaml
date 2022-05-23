@@ -3,8 +3,6 @@ kind: Ingress
 metadata:
   namespace: mainapp
   name: hy-kube-mainapp-ingress
-  annotations:
-    traefik.ingress.kubernetes.io/rule-type: "PathPrefixStrip"
 spec:
   rules:
     - http:
