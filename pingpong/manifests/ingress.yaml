@@ -1,14 +1,26 @@
-apiVersion: extensions/v1beta1
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: strip-prefix
+spec:
+  stripPrefix:
+    prefixes:
+      - /pingpong
+---
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: hy-kube-pingpong-ingress
   annotations:
-    traefik.ingress.kubernetes.io/rule-type: "PathPrefixStrip"
+    traefik.ingress.kubernetes.io/router.middlewares: default-strip-prefix@kubernetescrd
 spec:
   rules:
     - http:
         paths:
           - path: /pingpong
+            pathType: Prefix
             backend:
-              serviceName: hy-kube-pingpong-svc
-              servicePort: 80
+              service:
+                name: hy-kube-pingpong-svc
+                port:
+                  number: 80
