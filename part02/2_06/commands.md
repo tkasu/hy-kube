@@ -26,7 +26,7 @@ In folder /pingpong/
 ## Create cluster
 
 ```
-k3d cluster create --port '8082:30080@agent[0]' -p 8081:80@loadbalancer --agents 2
+k3d cluster create --port 8082:30080@agent:0 -p 8081:80@loadbalancer --agents 2
 ```
 
 ## Init filesystem
@@ -59,7 +59,7 @@ namespace/mainapp created
 
 ### mainapp
 
-In folder project/frontend:
+In folder mainapp:
 
 ```
 $ kubectl apply -f manifests/
@@ -72,7 +72,7 @@ service/hy-kube-mainapp-svc created
 
 ### pingpong
 
-In folder project/backend/:
+In folder pingpong:
 
 ```
 $ kubectl apply -f manifests/
