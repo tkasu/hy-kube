@@ -20,26 +20,15 @@ In folder /pingpong/
 ## Create cluster
 
 ```
-k3d cluster create --port '8082:30080@agent[0]' -p 8081:80@loadbalancer --agents 2 --k3s-agent-arg '--kubelet-arg=eviction-hard=imagefs.available<1%,nodefs.available<1%' --k3s-agent-arg '--kubelet-arg=eviction-minimum-reclaim=imagefs.available=1%,nodefs.available=1%'
+k3d cluster create --port 8082:30080@agent:0 -p 8081:80@loadbalancer --agents 2
+```
+
+For disk space issues, you can try the following args when creating the cluster:
+```
+--k3s-agent-arg '--kubelet-arg=eviction-hard=imagefs.available<1%,nodefs.available<1%' --k3s-agent-arg '--kubelet-arg=eviction-minimum-reclaim=imagefs.available=1%,nodefs.available=1%'
 ```
 
 For background for the --k3s-agent-args, see: https://k3d.io/faq/faq/#pods-evicted-due-to-lack-of-disk-space
-
-## Init filesystem
-
-```bash
-docker exec k3d-k3s-default-agent-0 mkdir -p /tmp/kube
-```
-
-```bash
-docker exec k3d-k3s-default-agent-0 mkdir -p /tmp/kube_pg
-```
-
-## Install kubeseal
-
-```bash
-kubectl apply -f https://github.com/bitnami-labs/sealed-secrets/releases/download/v0.15.0/controller.yaml
-```
 
 ## Creating the namespace
 
@@ -51,50 +40,87 @@ namespace/mainapp created
 
 ## Deployment
 
-### pingpong
+## Init & deploy secrets
 
-```
-$ kubectl apply -f pingpong/manifests/
+in pingpong/manifests/secrets
 
-deployment.apps/pingpong-dep created
-ingress.extensions/pingpong-ingress created
-configmap/pingpong-postgres-config created
-persistentvolume/postgres-pv created
-sealedsecret.bitnami.com/postgres-password created
-service/pingpong-db created
-statefulset.apps/postgres-ss 
-```
 
-Please note, that the sealed secret is not working in other machines than my local machines. If you want to get it working on your cluster, create a following yaml to folder manifests_temp:
+Init secret when setting up for the first time:
 
-```yaml
+Create template for Secret (without saving it to version control):
+
+```yml
+# pingpong/manifests/secrets/postgres-pwd.yaml
 apiVersion: v1
 kind: Secret
 metadata:
   name: postgres-password
   namespace: mainapp
 data:
-  PASSWORD: cGluZ3BvbmcK
+  API_KEY: U3VjaFZlcnlCaWdBbmRJbXBvcnRhbnRTZWNyZXQK  # FIXME, remember to encode to base64
 ```
 
-And update the sealed secret by running:
-
 ```bash
-$ kubeseal -o yaml < pingpong/manifests_temp/postgres-pwd-secret.yaml > pingpong/manifests/postgres-pwd-sealedsecret.yaml
-$ kubectl apply -f pingpong/manifests/postgres-pwd-sealedsecret.yaml
-sealedsecret.bitnami.com/postgres-password created
+age-keygen -o key.txt
+
+sops --encrypt \
+       --age age162unsh9g6c94es64yqljgtxc9j4z395crnz7cvqyxhm3shs8qusqnqynr4 \
+       --encrypted-regex '^(data)$' \
+       postgres-pwd.yaml > postgres-pwd.enc.yaml
+```
+
+Deploy:
+
+```
+$ SOPS_AGE_KEY_FILE=$(pwd)/key.txt sops --decrypt postgres-pwd.enc.yaml | kubectl apply -f -
+
+secret/postgres-password created
+```
+
+### pingpong
+
+in pingpong/
+
+```
+$ kubectl apply -f manifests/
+
+configmap/pingpong-config created
+deployment.apps/pingpong-dep created
+middleware.traefik.containo.us/strip-prefix created
+ingress.networking.k8s.io/pingpong-ingress created
+configmap/pingpong-postgres-config created
+service/pingpong-db created
+statefulset.apps/postgres-ss created
+service/pingpong-svc created
 ```
 
 ## Testing
 
 ```
 $ kubectl get pods --namespace mainapp
-NAME                                    READY   STATUS        RESTARTS   AGE
-hy-kube-pingpong-dep-5cffc455bf-z6j99   1/1     Running       0          7m3s<z
-hy-kube-mainapp-dep-5f97b889b7-8pslp    2/2     Running       0          29s
 
-$ curl localhost:8081
-Hello
-2021-03-09T12:31:17.274288090Z a00543af-3486-4403-b73e-723ec1df2390
-Ping / Pongs: 0%
+NAME                           READY   STATUS    RESTARTS      AGE
+postgres-ss-0                  1/1     Running   0             86s
+pingpong-dep-87c6f578c-hbz4j   1/1     Running   3 (36s ago)   86s
+
+$ curl localhost:8081/pingpong
+pong 0% 
+
+$ curl localhost:8081/pingpong/pings
+{"ping_id":"hy_kube_ping","ping_count":1}%
+
+# Test that state still persist after deletes
+$ kubectl delete pod pingpong-dep-87c6f578c-hbz4j --namespace mainapp
+pod "pingpong-dep-87c6f578c-hbz4j" deleted
+
+$ kubectl delete pod postgres-ss-0 --namespace mainapp
+pod "postgres-ss-0" deleted
+
+$ kubectl get pods --namespace mainapp
+NAME                           READY   STATUS    RESTARTS   AGE
+pingpong-dep-87c6f578c-ck2kr   1/1     Running   0          51s
+postgres-ss-0                  1/1     Running   0          19s
+
+$ curl localhost:8081/pingpong/pings
+{"ping_id":"hy_kube_ping","ping_count":1}%
 ```

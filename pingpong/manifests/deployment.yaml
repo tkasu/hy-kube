@@ -15,8 +15,20 @@ spec:
     spec:
       containers:
         - name: hy-kube-pingpong
-          image: tkasu/hy-kube-pingpong:ex2.03
+          image: tkasu/hy-kube-pingpong:ex2.07
           imagePullPolicy: Always
+          envFrom:
+          - configMapRef:
+              name: pingpong-config
+          - configMapRef:
+              name: pingpong-postgres-config
           env:
-            - name: ROCKET_PORT
-              value: "3000"
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-password
+                  key: PASSWORD
+            - name: DATABASE_URL
+              value: postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@pingpong-db/$(POSTGRES_DB)
+            - name: ROCKET_DATABASES
+              value: '{pingpongdb={url="$(DATABASE_URL)"}}'

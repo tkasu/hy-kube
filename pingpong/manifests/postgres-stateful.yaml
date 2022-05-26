@@ -16,12 +16,12 @@ spec:
     spec:
       containers:
         - name: postgres
-          image: postgres:13.2 
+          image: postgres:14.3
           envFrom:
           - configMapRef:
               name: pingpong-postgres-config
           env:
-            - name: POSTGRES_PASSWORD 
+            - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: postgres-password
@@ -38,7 +38,7 @@ spec:
         name: postgres
       spec:
         accessModes: ["ReadWriteOnce"]
-        storageClassName: manual
+        storageClassName: local-path
         resources:
           requests:
             storage: 100Mi

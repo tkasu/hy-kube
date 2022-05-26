@@ -7,4 +7,4 @@ data:
   ROCKET_PORT: "3000"
   MESSAGE: "Hello"
   MAINAPP_FILE_PATH: "/usr/app/files/timestamps.txt"
-  PINGPONG_APP_URL: "http://hy-kube-pingpong-svc"
+  PINGPONG_APP_URL: "http://pingpong-svc"

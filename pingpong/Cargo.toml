@@ -5,16 +5,20 @@ authors = ["Tomi Kasurinen <tomi.kasurinen@solita.fi>"]
 edition = "2018"
 
 [dependencies]
-rocket = { version = "0.5.0-dev", git = "https://github.com/SergioBenitez/Rocket", rev = "dd0c036" }
+rocket = { version = "0.5.0-rc.2", features = ["json"] }
 serde = { version = "1.0", features = ["derive"] }
+#sqlx = "0.5"
 serde_json = "1.0"
 dotenv = "0.15.0"
 indexmap = "1.6.2"
-diesel = { version = "1.4.4", features = ["postgres"] }
+diesel = { version = "1.4.8", features = ["postgres"] }
+diesel_migrations = "1.4.0"
 
-[dependencies.rocket_contrib]
-version = "0.5.0-dev"
-git = "https://github.com/SergioBenitez/Rocket"
-rev = "dd0c036"
+[dependencies.sqlx]
+version = "0.5"
 default-features = false
-features = ["json", "diesel_postgres_pool"]
+features = ["macros"]
+
+[dependencies.rocket_db_pools]
+version = "0.1.0-rc.2"
+features = ["sqlx_postgres"]

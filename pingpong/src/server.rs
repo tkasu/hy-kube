@@ -1,58 +1,29 @@
+use crate::db_live::{self, PingPongDbConn};
 use crate::models;
 
-use rocket::{State, Rocket, Build};
-use rocket_contrib::json::Json;
-use std::sync::{Arc, Mutex};
+use rocket::serde::json::Json;
+use rocket::{Build, Rocket};
 
-use rocket_contrib::databases::diesel;
+use rocket_db_pools::Database;
 
-
-#[database("pingpongdb")]
-struct PingPongDbConn(diesel::PgConnection);
-
-/*
-pub struct AppState {
-    ping_count: Arc<Mutex<i32>>,
-}
-
-impl AppState {
-    pub fn new() -> AppState {
-        AppState {
-            ping_count: Arc::new(Mutex::new(0)),
-        }
-    }
-
-    fn get_pings(&self) -> i32 {
-        let count = self.ping_count.lock().unwrap();
-        *count
-    }
-
-    fn inc_pings(&self) {
-        let mut guard = self.ping_count.lock().unwrap();
-        let new_count = *guard + 1;
-        *guard = new_count;
-    }
-}
- */
 
 #[get("/")]
-fn pong(state: State<AppState>) -> String {
-    let old_count = state.get_pings();
-    state.inc_pings();
-    format!("pong {}", old_count)
+async fn pong(db: &PingPongDbConn) -> String {
+    let old_count = db_live::get_ping(db).await.unwrap();
+    db_live::inc_ping(db).await;
+    format!("pong {}", old_count.ping_count)
 }
 
 #[get("/pings")]
-fn pings(state: State<AppState>) -> Json<models::PingStatus> {
-    let pings = state.get_pings();
-    Json(models::PingStatus { ping_id: String::from("pingpong"), ping_count: pings })
+async fn pings(db: &PingPongDbConn) -> Json<models::PingStatus> {
+    let ping_status = db_live::get_ping(db).await.unwrap();
+    Json(ping_status)
 }
 
-pub fn build_web_server(state: AppState) -> Rocket<Build> {
-    let conn = PingPongDbConn::fairing();
+pub fn build_web_server() -> Rocket<Build> {
+    let conn = PingPongDbConn::init();
 
     rocket::build()
         .attach(conn)
-        .manage(state)
         .mount("/", routes![pong, pings])
 }

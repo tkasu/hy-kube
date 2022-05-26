@@ -2,3 +2,5 @@
 .idea
 *.txt
 .env
+manifests/secrets/postgres-pwd.yaml
+manifests/secrets/key.txt
