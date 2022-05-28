@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: hy-kube-project
+  name: project-db-config
+  labels:
+    app: project-db
+data:
+  POSTGRES_DB: projectdb
+  POSTGRES_USER: admin
+
