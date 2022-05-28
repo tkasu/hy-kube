@@ -1,6 +1,7 @@
 extern crate rocket;
 
 use backend::config::Config;
+use backend::db;
 use backend::image::update_image_loop;
 use backend::server::build_web_server;
 use std::process;
@@ -13,6 +14,9 @@ async fn main() {
         process::exit(1);
     });
     println!("Using config: {:?}", config);
+
+    let db_conn = db::establish_connection(config.db_url.as_str()).await;
+    db::run_migrations(&db_conn).await;
 
     thread::spawn(move || update_image_loop(config));
 

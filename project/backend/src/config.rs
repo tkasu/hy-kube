@@ -7,12 +7,17 @@ pub const DEFAULT_IMAGE_UPDATE_INTERVAL_SECS: i64 = 60;
 
 #[derive(Clone, Debug)]
 pub struct Config {
+    pub db_url: String,
     pub image_update_interval: i64,
     pub image_cache_path: String,
     pub image_state_path: String,
 }
 
 impl Config {
+    fn get_db_url() -> String {
+        env::var("DATABASE_URL").expect("DATABASE_URL must be set")
+    }
+
     fn get_update_interval() -> Result<i64, String> {
         let image_update_interval: Result<i64, String> = match env::var("IMAGE_UPDATE_INTERVAL") {
             Err(_) => {
@@ -46,6 +51,7 @@ impl Config {
     }
 
     pub fn new() -> Result<Config, String> {
+        let db_url = Config::get_db_url();
         let image_update_interval = match Config::get_update_interval() {
             Err(e) => return Err(e),
             Ok(interval) => interval,
@@ -54,6 +60,7 @@ impl Config {
         let image_cache_path = Config::get_image_cache_path();
 
         Ok(Config {
+            db_url,
             image_update_interval,
             image_cache_path,
             image_state_path,
