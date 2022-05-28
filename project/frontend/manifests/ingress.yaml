@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: hy-kube-frontend-ingress
+  name: frontend-ingress
   namespace: hy-kube-project
 spec:
   rules:
@@ -11,6 +11,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: hy-kube-frontend-svc
+                name: frontend-svc
                 port:
                   number: 2345

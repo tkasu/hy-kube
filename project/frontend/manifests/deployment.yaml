@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: hy-kube-frontend-dep
+  name: frontend-dep
   namespace: hy-kube-project
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: hy-kube-frontend
+      app: frontend
   template:
     metadata:
       labels:
-        app: hy-kube-frontend
+        app: frontend
     spec:
       volumes:
         - name: project-volume
           persistentVolumeClaim:
-            claimName: hy-kube-project-claim
+            claimName: project-claim
       containers:
         - name: hy-kube-frontend
           image: tkasu/hy-kube-frontend:ex2.04

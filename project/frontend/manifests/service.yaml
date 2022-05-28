@@ -1,12 +1,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: hy-kube-frontend-svc
+  name: frontend-svc
   namespace: hy-kube-project
 spec:
   type: ClusterIP
   selector:
-    app: hy-kube-frontend
+    app: frontend
   ports:
     - name: http
       protocol: TCP

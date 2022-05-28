@@ -11,7 +11,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   namespace: hy-kube-project
-  name: hy-kube-backend-ingress
+  name: backend-ingress
   annotations:
     traefik.ingress.kubernetes.io/router.middlewares: default-strip-prefix@kubernetescrd
 spec:
@@ -22,6 +22,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: hy-kube-backend-svc
+                name: backend-svc
                 port:
                   number: 3456

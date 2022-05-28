@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: hy-kube-project
+  name: backend-config
+  labels:
+    app: backend
+data:
+  ROCKET_ADDRESS: "0.0.0.0"
+  ROCKET_PORT: "3000"
+  ROCKET_LOG_LEVEL: "normal"
+  IMAGE_CACHE_PATH: /usr/app/files/img.jpg
+  IMAGE_STATE_PATH: /usr/app/files/img_state.json
+  IMAGE_UPDATE_INTERVAL: "86400" # Seconds in a day
