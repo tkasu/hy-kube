@@ -1,4 +1,4 @@
-FROM rustlang/rust:nightly-buster@sha256:ca626ba169b1b720fcdad3c9ebdba1a97ed4cc0cc2ad53f70c456ca4ccd96537 as builder
+FROM rust:1.61.0-buster as builder
 WORKDIR /usr/src/backend
 COPY . .
 RUN cargo install --locked --path .
@@ -9,6 +9,5 @@ COPY --from=builder /usr/src/backend/target/release/backend .
 COPY --from=builder /usr/src/backend/public/ ./public/
 COPY --from=builder /usr/src/backend/Rocket.toml ./Rocket.toml
 RUN apt-get update && apt-get install -y libssl-dev ca-certificates
-ENV ROCKET_PORT 8000
-ENV ROCKET_ENV prod
+RUN apt-get update && apt-get install libpq5 -y
 CMD ["./backend"]

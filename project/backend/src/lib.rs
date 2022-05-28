@@ -1,5 +1,3 @@
-#![feature(proc_macro_hygiene, decl_macro)]
-
 #[macro_use]
 extern crate rocket;
 extern crate rocket_cors;
@@ -9,10 +7,10 @@ use chrono::serde::ts_seconds::deserialize as from_ts;
 use chrono::serde::ts_seconds::serialize as to_ts;
 use chrono::Duration;
 use chrono::{DateTime, Utc};
+use rocket::fs::NamedFile;
 use rocket::http::Method;
-use rocket::response::NamedFile;
-use rocket::State;
-use rocket_contrib::json::Json;
+use rocket::serde::json::Json;
+use rocket::{Build, Rocket, State};
 use rocket_cors::{AllowedHeaders, AllowedOrigins, Cors};
 use serde::{Deserialize, Serialize};
 use std::borrow::Borrow;
@@ -283,20 +281,20 @@ pub fn update_image_loop(config: Config) {
 }
 
 #[get("/daily_photo")]
-fn daily_photo() -> Option<NamedFile> {
-    NamedFile::open("./public/assets/daily_pic.jpg").ok()
+async fn daily_photo() -> Option<NamedFile> {
+    NamedFile::open("./public/assets/daily_pic.jpg").await.ok()
 }
 
 #[get("/todos")]
-fn todos(todo_list: State<TodoListBoxed>) -> Json<TodoList> {
+fn todos(todo_list: &State<TodoListBoxed>) -> Json<TodoList> {
     let todos = todo_list.get_todos();
     Json(todos)
 }
 
-#[post("/todo", format = "application/json", data = "<todo>")]
-fn new_todo(todo_list: State<TodoListBoxed>, todo: Json<Todo>) -> Json<Todo> {
+#[post("/todo", format = "json", data = "<todo>")]
+fn new_todo(todo_list: &State<TodoListBoxed>, todo: Json<Todo>) -> Json<Todo> {
     let todo_add = todo.clone();
-    todo_list.add_todo(todo_add);
+    todo_list.add_todo(todo_add.0);
     todo
 }
 
@@ -318,13 +316,12 @@ fn get_cors() -> Cors {
     cors
 }
 
-pub fn start_web_server() {
+pub fn build_web_server() -> Rocket<Build> {
     let todo_state = TodoListBoxed::new();
     let cors = get_cors();
 
-    rocket::ignite()
+    rocket::build()
         .manage(todo_state)
         .mount("/", routes![daily_photo, todos, new_todo])
         .attach(cors)
-        .launch();
 }
