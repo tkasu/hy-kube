@@ -1,8 +1,8 @@
 extern crate rocket;
 
-use backend::build_web_server;
-use backend::update_image_loop;
-use backend::Config;
+use backend::config::Config;
+use backend::image::update_image_loop;
+use backend::server::build_web_server;
 use std::process;
 use std::thread;
 
