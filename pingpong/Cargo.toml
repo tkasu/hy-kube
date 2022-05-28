@@ -1,7 +1,7 @@
 [package]
 name = "pingpong"
 version = "0.1.0"
-authors = ["Tomi Kasurinen <tomi.kasurinen@solita.fi>"]
+authors = ["Tomi Kasurinen <tomi.kasurinen@gmail.com>"]
 edition = "2018"
 
 [dependencies]
