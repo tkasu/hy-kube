@@ -57,14 +57,14 @@ metadata:
   name: postgres-password
   namespace: mainapp
 data:
-  API_KEY: U3VjaFZlcnlCaWdBbmRJbXBvcnRhbnRTZWNyZXQK  # FIXME, remember to encode to base64
+  PASSWORD: U3VjaFZlcnlCaWdBbmRJbXBvcnRhbnRTZWNyZXQK  # FIXME, remember to encode to base64
 ```
 
 ```bash
 age-keygen -o key.txt
 
 sops --encrypt \
-       --age age162unsh9g6c94es64yqljgtxc9j4z395crnz7cvqyxhm3shs8qusqnqynr4 \
+       --age age162unsh9g6c94es64yqljgtxc9j4z395crnz7cvqyxhm3shs8qusqnqynr4 \   # FIXME WITH YOUR PUBLIC KEY
        --encrypted-regex '^(data)$' \
        postgres-pwd.yaml > postgres-pwd.enc.yaml
 ```
