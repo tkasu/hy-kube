@@ -1,6 +1,7 @@
 use crate::db;
 use crate::db::ProjectDbConn;
 use crate::model::{Todo, TodoList};
+use rocket::fairing::AdHoc;
 use rocket::fs::NamedFile;
 use rocket::http::Method;
 use rocket::serde::json::Json;
@@ -51,4 +52,5 @@ pub fn build_web_server() -> Rocket<Build> {
         .mount("/", routes![daily_photo, todos, new_todo])
         .attach(cors)
         .attach(db_conn)
+        .attach(AdHoc::try_on_ignite("DB Migrations", db::run_migrations))
 }
