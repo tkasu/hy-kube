@@ -74,7 +74,7 @@ metadata:
   name: postgres-password
   namespace: hy-kube-project
 data:
-  API_KEY: QW5vdGhlclZlcnlCaWdBbmRJbXBvcnRhbnRTZWNyZXQ= # FIXME, remember to encode to base64
+  PASSWORD: QW5vdGhlclZlcnlCaWdBbmRJbXBvcnRhbnRTZWNyZXQ= # FIXME, remember to encode to base64
 ```
 
 ```bash
@@ -106,6 +106,9 @@ deployment.apps/backend-dep created
 middleware.traefik.containo.us/strip-prefix created
 ingress.networking.k8s.io/backend-ingress created
 persistentvolumeclaim/project-claim created
+configmap/project-db-config created
+service/project-db-svc created
+statefulset.apps/postgres-ss created
 service/backend-svc created
 ```
 
@@ -126,28 +129,42 @@ service/frontend-svc created
 ```
 $ kubectl get pods --namespace hy-kube-project
 
-NAME                           READY   STATUS    RESTARTS      AGE
-postgres-ss-0                  1/1     Running   0             86s
-pingpong-dep-87c6f578c-hbz4j   1/1     Running   3 (36s ago)   86s
+NAME                            READY   STATUS    RESTARTS      AGE
+postgres-ss-0                   1/1     Running   0             2m40s
+backend-dep-6bd5b7d647-bzbv6    1/1     Running   1 (88s ago)   2m40s
+frontend-dep-8544647698-s8mtn   1/1     Running   0             32s
+```
 
-$ curl localhost:8081/pingpong
-pong 0% 
+Initial todo post:
 
-$ curl localhost:8081/pingpong/pings
-{"ping_id":"hy_kube_ping","ping_count":1}%
+![Initial get](initial_todo_post.png)
 
-# Test that state still persist after deletes
-$ kubectl delete pod pingpong-dep-87c6f578c-hbz4j --namespace mainapp
-pod "pingpong-dep-87c6f578c-hbz4j" deleted
+Confirm with API call:
 
-$ kubectl delete pod postgres-ss-0 --namespace mainapp
+```
+$ curl localhost:8081/api/todos
+{"todos":[{"task":"Task 1"}]}%
+```
+
+Kill backend and stateful set:
+
+```
+$ kubectl delete pod backend-dep-6bd5b7d647-bzbv6 --namespace hy-kube-project
+pod "backend-dep-6bd5b7d647-bzbv6" deleted
+
+$ kubectl delete pod postgres-ss-0  --namespace hy-kube-project
 pod "postgres-ss-0" deleted
+```
 
-$ kubectl get pods --namespace mainapp
-NAME                           READY   STATUS    RESTARTS   AGE
-pingpong-dep-87c6f578c-ck2kr   1/1     Running   0          51s
-postgres-ss-0                  1/1     Running   0          19s
+See that the state still persist:
 
-$ curl localhost:8081/pingpong/pings
-{"ping_id":"hy_kube_ping","ping_count":1}%
+```
+$ kubectl get pods --namespace hy-kube-project
+NAME                            READY   STATUS    RESTARTS   AGE
+frontend-dep-8544647698-s8mtn   1/1     Running   0          67s
+backend-dep-6bd5b7d647-hw54w    1/1     Running   0          13s
+postgres-ss-0                   1/1     Running   0          6s
+
+$ curl localhost:8081/api/todos
+{"todos":[{"task":"Task 1"}]}%
 ```

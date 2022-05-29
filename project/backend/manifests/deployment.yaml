@@ -27,3 +27,15 @@ spec:
           envFrom:
           - configMapRef:
               name: backend-config
+          - configMapRef:
+              name: project-db-config
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-password
+                  key: PASSWORD
+            - name: DATABASE_URL
+              value: postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@project-db-svc/$(POSTGRES_DB)
+            - name: ROCKET_DATABASES
+              value: '{projectdb={url="$(DATABASE_URL)"}}'
