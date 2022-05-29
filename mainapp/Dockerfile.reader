@@ -1,4 +1,4 @@
-FROM rustlang/rust:nightly-buster@sha256:ca626ba169b1b720fcdad3c9ebdba1a97ed4cc0cc2ad53f70c456ca4ccd96537 as builder
+FROM rust:1.61.0-buster as builder
 WORKDIR /usr/src/mainapp
 COPY . .
 RUN cargo build --release

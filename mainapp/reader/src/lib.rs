@@ -1,10 +1,8 @@
-#![feature(proc_macro_hygiene, decl_macro)]
-
 #[macro_use]
 extern crate rocket;
 
 use reqwest;
-use rocket::State;
+use rocket::{Build, Rocket, State};
 use serde::Deserialize;
 use std::fs::OpenOptions;
 use std::io::prelude::*;
@@ -129,8 +127,8 @@ pub fn update_and_log(s: String, receiver: Receiver<String>, state: Arc<Mutex<Ap
 
 #[get("/")]
 fn get_default(
-    app_state: State<Arc<Mutex<AppState>>>,
-    ping_state: State<Arc<PingState>>,
+    app_state: &State<Arc<Mutex<AppState>>>,
+    ping_state: &State<Arc<PingState>>,
 ) -> String {
     let app_state = app_state.lock().unwrap();
     let id = &app_state.id.clone();
@@ -146,10 +144,12 @@ fn get_default(
     resp
 }
 
-pub fn launch_web_server(app_state: Arc<Mutex<AppState>>, ping_state: Arc<PingState>) {
-    let r = rocket::ignite()
+pub fn build_web_server(
+    app_state: Arc<Mutex<AppState>>,
+    ping_state: Arc<PingState>,
+) -> Rocket<Build> {
+    rocket::build()
         .mount("/", routes![get_default])
         .manage(app_state)
-        .manage(ping_state);
-    r.launch();
+        .manage(ping_state)
 }

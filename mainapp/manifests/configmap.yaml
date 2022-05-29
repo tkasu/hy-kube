@@ -4,6 +4,7 @@ metadata:
   name: mainapp-configmap
   namespace: mainapp
 data:
+  ROCKET_ADDRESS: "0.0.0.0"
   ROCKET_PORT: "3000"
   MESSAGE: "Hello"
   MAINAPP_FILE_PATH: "/usr/app/files/timestamps.txt"

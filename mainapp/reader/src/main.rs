@@ -1,7 +1,7 @@
 extern crate dotenv;
 
 use dotenv::dotenv;
-use reader::{launch_web_server, read_and_send, update_and_log, update_pings, AppState, PingState};
+use reader::{build_web_server, read_and_send, update_and_log, update_pings, AppState, PingState};
 use std::env;
 use std::sync::mpsc::{channel, Receiver, Sender};
 use std::sync::{Arc, Mutex};
@@ -20,7 +20,8 @@ fn get_ts_file_path() -> String {
     path
 }
 
-fn main() {
+#[rocket::main]
+async fn main() {
     dotenv().ok();
 
     let ts_file_path = get_ts_file_path();
@@ -58,5 +59,6 @@ fn main() {
         update_and_log(id, file_input_receiver, state_for_update);
     });
 
-    launch_web_server(app_state, ping_state)
+    let server = build_web_server(app_state, ping_state);
+    let _ = server.launch().await.unwrap();
 }
