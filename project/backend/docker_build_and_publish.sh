@@ -6,6 +6,6 @@ then
   exit 1
 fi
 
-docker build -t hy-kube-backend .
+docker build -t hy-kube-backend -f Dockerfile.server .
 docker tag hy-kube-backend tkasu/hy-kube-backend:$1
 docker push tkasu/hy-kube-backend:$1

@@ -3,4 +3,4 @@
 index_image.jpg
 index_state.json
 static/daily_pic.jpg
-public/assets/*.jpg
+server/public/assets/*.jpg
