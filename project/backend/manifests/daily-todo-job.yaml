@@ -1,0 +1,19 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: randomtask
+  namespace: hy-kube-project
+spec:
+  schedule: "0 8 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: randomtask
+            image: tkasu/hy-kube-backend-randomtask:ex2.09
+            imagePullPolicy: Always
+            env:
+              - name: API_URL
+                value: http://backend-svc:3456
+          restartPolicy: Never

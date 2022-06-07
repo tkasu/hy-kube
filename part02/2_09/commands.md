@@ -1,11 +1,11 @@
-# Ex 2.08
+# Ex 2.09
 
 ## Checking out the correct version
 
 To rebuild the same image, first checkout the correct tag:
 
 ```
-git checkout ex2.08
+git checkout ex2.09
 ```
 
 ## Building the applications
@@ -14,13 +14,13 @@ git checkout ex2.08
 In folder project/backend/
 
 ```
-./docker_build_and_publish.sh ex2.08
+./docker_build_and_publish.sh ex2.09
 ```
 
 In folder project/frontend/
 
 ```
-./docker_build_and_publish.sh ex2.08
+./docker_build_and_publish.sh ex2.09
 ```
 
 ## Create cluster
@@ -101,6 +101,7 @@ in project/backend
 ```
 $ kubectl apply -f manifests/
 
+cronjob.batch/randomtask created
 configmap/backend-config created
 deployment.apps/backend-dep created
 middleware.traefik.containo.us/strip-prefix created
@@ -126,45 +127,23 @@ service/frontend-svc created
 
 ## Testing
 
-```
-$ kubectl get pods --namespace hy-kube-project
-
-NAME                            READY   STATUS    RESTARTS      AGE
-postgres-ss-0                   1/1     Running   0             2m40s
-backend-dep-6bd5b7d647-bzbv6    1/1     Running   1 (88s ago)   2m40s
-frontend-dep-8544647698-s8mtn   1/1     Running   0             32s
-```
-
-Initial todo post:
-
-![Initial get](initial_todo_post.png)
-
-Confirm with API call:
-
-```
-$ curl localhost:8081/api/todos
-{"todos":[{"task":"Task 1"}]}%
-```
-
-Kill backend and stateful set:
-
-```
-$ kubectl delete pod backend-dep-6bd5b7d647-bzbv6 --namespace hy-kube-project
-pod "backend-dep-6bd5b7d647-bzbv6" deleted
-
-$ kubectl delete pod postgres-ss-0  --namespace hy-kube-project
-pod "postgres-ss-0" deleted
-```
-
-See that the state still persist:
+For testing, daily-todojob.yaml schedule is changed to "* * * * *":
 
 ```
 $ kubectl get pods --namespace hy-kube-project
-NAME                            READY   STATUS    RESTARTS   AGE
-frontend-dep-8544647698-s8mtn   1/1     Running   0          67s
-backend-dep-6bd5b7d647-hw54w    1/1     Running   0          13s
-postgres-ss-0                   1/1     Running   0          6s
 
+NAME                            READY   STATUS      RESTARTS   AGE
+postgres-ss-0                   1/1     Running     0          8m35s
+frontend-dep-8544647698-dptl6   1/1     Running     0          8m27s
+backend-dep-65d9dc5cdb-dt4n9    1/1     Running     0          8m36s
+randomtask-27577050--1-26kmd    0/1     Completed   0          3m4s
+randomtask-27577051--1-scs72    0/1     Completed   0          2m4s
+randomtask-27577052--1-f6lsp    0/1     Completed   0          64s
+randomtask-27577053--1-ppg2w    1/1     Running     0          4s
+```
+
+```
 $ curl localhost:8081/api/todos
-{"todos":[{"task":"Task 1"}]}%
+
+{"todos":[{"task":"Read: https://en.wikipedia.org/wiki/Roque_J%C3%BAnior"},{"task":"Read: https://en.wikipedia.org/wiki/Family_Name_(film)"},{"task":"Read: https://en.wikipedia.org/wiki/Tuman_Leghari"},{"task":"Read: https://en.wikipedia.org/wiki/Korol_i_Shut_(album)"}]}% 
 ```

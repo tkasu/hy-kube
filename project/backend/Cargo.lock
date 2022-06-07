@@ -1222,6 +1222,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "randomtask"
+version = "0.1.0"
+dependencies = [
+ "reqwest",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "redox_syscall"
 version = "0.2.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
