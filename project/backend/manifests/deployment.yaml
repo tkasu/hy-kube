@@ -19,7 +19,7 @@ spec:
             claimName: project-claim
       containers:
         - name: hy-kube-backend
-          image: tkasu/hy-kube-backend:ex2.09
+          image: tkasu/hy-kube-backend:ex2.10
           imagePullPolicy: Always
           volumeMounts:
             - name: project-volume
