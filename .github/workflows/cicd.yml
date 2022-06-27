@@ -189,7 +189,7 @@ jobs:
       uses: docker/build-push-action@v3
       with:
         context: ./project/frontend
-        file: ./project/backend/Dockerfile.kube
+        file: ./project/frontend/Dockerfile.kube
         push: true
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
