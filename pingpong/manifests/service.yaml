@@ -6,7 +6,7 @@ metadata:
   labels:
     app: pingpong-svc
 spec:
-  type: ClusterIP
+  type: LoadBalancer
   selector:
     app: pingpong
   ports:
