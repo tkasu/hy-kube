@@ -2,8 +2,8 @@ name: CI&CD
 
 on:
   push:
-    branches: [ "master" ]
-    tags: ['ex*']
+    tags:
+      - ex**
 
 env:
   CARGO_TERM_COLOR: always
