@@ -31,6 +31,10 @@ run-pingpong: stop-db start-db
 	$(CD) pingpong && \
 	DATABASE_URL=$(POSTGRES_URL) ROCKET_DATABASES='{pingpongdb={url="$(POSTGRES_URL)"}}' cargo run
 
+run-project-backend: stop-db start-db
+	$(CD) project/backend && \
+	DATABASE_URL=$(POSTGRES_URL) ROCKET_DATABASES='{projectdb={url="$(POSTGRES_URL)"}}' cargo run --bin server
+
 gcp-infra-preq:
 	$(CD) gcp_resources && $(TERRAFORM) init
 

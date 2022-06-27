@@ -67,13 +67,18 @@ impl ErrDetails {
     }
 }
 
-#[get("/daily_photo")]
+#[get("/")]
+async fn healthcheck() -> &'static str {
+    "Ok"
+}
+
+#[get("/api/daily_photo")]
 async fn daily_photo(route: &Route, ip: IpAddr) -> Option<NamedFile> {
     ReqDetails::new(route, ip, None).log();
     NamedFile::open("./public/assets/daily_pic.jpg").await.ok()
 }
 
-#[get("/todos")]
+#[get("/api/todos")]
 async fn todos<'a>(db_conn: &ProjectDbConn, route: &Route, ip: IpAddr) -> Json<TodoList> {
     ReqDetails::new(route, ip, None).log();
 
@@ -81,7 +86,7 @@ async fn todos<'a>(db_conn: &ProjectDbConn, route: &Route, ip: IpAddr) -> Json<T
     Json(todos)
 }
 
-#[post("/todo", format = "json", data = "<todo>")]
+#[post("/api/todo", format = "json", data = "<todo>")]
 async fn new_todo<'a>(
     todo: Json<Todo>,
     db_conn: &ProjectDbConn,
@@ -126,7 +131,7 @@ pub fn build_web_server() -> Rocket<Build> {
     let db_conn = ProjectDbConn::init();
 
     rocket::build()
-        .mount("/", routes![daily_photo, todos, new_todo])
+        .mount("/", routes![healthcheck, daily_photo, todos, new_todo])
         .attach(cors)
         .attach(db_conn)
         .attach(AdHoc::try_on_ignite("DB Migrations", db::run_migrations))
