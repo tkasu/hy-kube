@@ -18,7 +18,7 @@ spec:
           emptyDir: {}
       containers:
         - name: hy-kube-mainapp-reader
-          image: tkasu/hy-kube-mainapp-reader:ex2.08
+          image: tkasu/hy-kube-mainapp-reader:ex3.02
           imagePullPolicy: Always
           volumeMounts:
             - name: timestamps-volume
@@ -27,7 +27,7 @@ spec:
             - configMapRef:
                 name: mainapp-configmap
         - name: hy-kube-mainapp-writer
-          image: tkasu/hy-kube-mainapp-writer:ex2.08
+          image: tkasu/hy-kube-mainapp-writer:ex3.02
           imagePullPolicy: Always
           volumeMounts:
             - name: timestamps-volume
