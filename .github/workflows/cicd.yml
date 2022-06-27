@@ -61,7 +61,7 @@ jobs:
       with:
         images: tkasu/hy-kube-mainapp-writer
 
-    - name: Build and push Docker  image
+    - name: Build and push Docker image
       uses: docker/build-push-action@v3
       with:
         context: ./mainapp
@@ -92,7 +92,7 @@ jobs:
       with:
         images: tkasu/hy-kube-mainapp-reader
 
-    - name: Build and push Docker  image
+    - name: Build and push Docker image
       uses: docker/build-push-action@v3
       with:
         context: ./mainapp
