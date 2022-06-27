@@ -2,22 +2,22 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   namespace: mainapp
-  name: hy-kube-mainapp-dep
+  name: mainapp-dep
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: hy-kube-mainapp
+      app: mainapp
   template:
     metadata:
       labels:
-        app: hy-kube-mainapp
+        app: mainapp
     spec:
       volumes:
         - name: timestamps-volume
           emptyDir: {}
       containers:
-        - name: hy-kube-mainapp-reader
+        - name: mainapp-reader
           image: tkasu/hy-kube-mainapp-reader:ex3.02
           imagePullPolicy: Always
           volumeMounts:
@@ -26,7 +26,7 @@ spec:
           envFrom:
             - configMapRef:
                 name: mainapp-configmap
-        - name: hy-kube-mainapp-writer
+        - name: mainapp-writer
           image: tkasu/hy-kube-mainapp-writer:ex3.02
           imagePullPolicy: Always
           volumeMounts:

@@ -28,8 +28,8 @@ stop-db:
 	$(DOCKER) rm pingpong-postgres
 
 run-pingpong: stop-db start-db
-		$(CD) pingpong && \
-		DATABASE_URL=$(POSTGRES_URL) ROCKET_DATABASES='{pingpongdb={url="$(POSTGRES_URL)"}}' cargo run
+	$(CD) pingpong && \
+	DATABASE_URL=$(POSTGRES_URL) ROCKET_DATABASES='{pingpongdb={url="$(POSTGRES_URL)"}}' cargo run
 
 gcp-infra-preq:
 	$(CD) gcp_resources && $(TERRAFORM) init
@@ -53,3 +53,15 @@ apply-pingpong-kube-preq:
 
 apply-pingpong-kube: apply-pingpong-kube-preq
 	$(CD) pingpong && $(K) apply -f manifests/
+
+apply-mainapp-kube-preq:
+	$(K) apply -f manifests_global/mainapp-namespace.yaml
+
+apply-mainapp-kube: apply-mainapp-kube-preq
+	$(CD) mainapp && $(K) apply -f manifests/
+
+delete-pingpong-kube:
+	$(CD) pingpong && $(K) delete -f manifests/
+
+delete-mainapp-kube:
+	$(CD) mainapp && $(K) delete -f manifests/

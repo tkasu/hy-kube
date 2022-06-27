@@ -10,7 +10,7 @@ git checkout ex3.02
 
 ## Building the applications
 
-Push the tag the github with 'ex'-prefix, e.g. 'ex3.02' and the Github Action will publish the project to Docker Hub repository: 'tkasu/hy-kube-*'
+Push the tag the github with 'ex'-prefix, e.g. 'ex3.01' and the Github Action will publish the project to Docker Hub repository: 'tkasu/hy-kube-*'
 
 ## Create cluster, other needed GCP resources and sync kubectl creds
 
@@ -52,19 +52,31 @@ sops --encrypt \
 ## Deploy manifests
 
 ```
-make apply-pingpong-kube
+make apply-pingpong-kube apply-mainapp-kube
 ```
 
 ## Testing
 
 ```bash
-$ kubectl get svc --namespace mainapp
-NAME           TYPE           CLUSTER-IP      EXTERNAL-IP    PORT(S)        AGE
-pingpong-db    ClusterIP      None            <none>         5432/TCP       5m23s
-pingpong-svc   LoadBalancer   10.43.247.133   34.88.30.255   80:30070/TCP   5m23s
+$ kubectl get ingress --namespace mainapp
+NAME               CLASS    HOSTS   ADDRESS          PORTS   AGE
+pingpong-ingress   <none>   *       34.111.105.205   80      6m50s
 
-$ curl 34.88.30.255
+$ curl 34.111.105.205
+Hello
+2022-06-27T17:52:16.039670553Z 7159ae2f-a20a-4c8b-8a2d-c3d60cd3a0f1
+Ping / Pongs: 0%
+
+$ curl 34.111.105.205/pingpong
 pong 0%
+
+$ curl 34.111.105.205/pingpong
+pong 1%
+
+$ curl 34.111.105.205
+Hello
+2022-06-27T17:52:16.039670553Z 7159ae2f-a20a-4c8b-8a2d-c3d60cd3a0f1
+Ping / Pongs: 2%
 ```
 
 ## Destroy cluster & other needed GCP resources

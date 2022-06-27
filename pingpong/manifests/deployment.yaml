@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: hy-kube-pingpong
-          image: tkasu/hy-kube-pingpong:ex3.01
+          image: tkasu/hy-kube-pingpong:ex3.02
           imagePullPolicy: Always
           envFrom:
           - configMapRef:
