@@ -1,23 +1,19 @@
-apiVersion: traefik.containo.us/v1alpha1
-kind: Middleware
-metadata:
-  name: strip-prefix
-spec:
-  stripPrefix:
-    prefixes:
-      - /api
----
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   namespace: hy-kube-project
   name: backend-ingress
-  annotations:
-    traefik.ingress.kubernetes.io/router.middlewares: default-strip-prefix@kubernetescrd
 spec:
   rules:
     - http:
         paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend-svc
+                port:
+                  number: 2345
           - path: /api/
             pathType: Prefix
             backend:

@@ -19,5 +19,5 @@ spec:
             claimName: project-claim
       containers:
         - name: hy-kube-frontend
-          image: tkasu/hy-kube-frontend:ex2.04
+          image: tkasu/hy-kube-frontend:ex3.03
           imagePullPolicy: Always

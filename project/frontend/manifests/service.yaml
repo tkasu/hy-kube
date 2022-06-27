@@ -4,7 +4,7 @@ metadata:
   name: frontend-svc
   namespace: hy-kube-project
 spec:
-  type: ClusterIP
+  type: NodePort
   selector:
     app: frontend
   ports:

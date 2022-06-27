@@ -55,11 +55,20 @@ apply-pingpong-kube-preq:
 	$(CD) pingpong/manifests/secrets \
 	&& SOPS_AGE_KEY_FILE=$(PWD)/pingpong/manifests/secrets/key.txt $(SOPS) --decrypt postgres-pwd.enc.yaml | kubectl apply -f -
 
+apply-project-kube-preq:
+	$(K) apply -f manifests_global/hy-kube-project-namespace.yaml
+	$(CD) project/backend/manifests/secrets \
+	&& SOPS_AGE_KEY_FILE=$(PWD)/project/backend/manifests/secrets/key.txt $(SOPS) --decrypt postgres-pwd.enc.yaml | kubectl apply -f -
+
 apply-pingpong-kube: apply-pingpong-kube-preq
 	$(CD) pingpong && $(K) apply -f manifests/
 
 apply-mainapp-kube-preq:
 	$(K) apply -f manifests_global/mainapp-namespace.yaml
+
+apply-project-kube: apply-project-kube-preq
+	$(CD) project/backend && $(K) apply -f manifests/
+	$(CD) project/frontend && $(K) apply -f manifests/
 
 apply-mainapp-kube: apply-mainapp-kube-preq
 	$(CD) mainapp && $(K) apply -f manifests/

@@ -11,9 +11,9 @@ spec:
         spec:
           containers:
           - name: randomtask
-            image: tkasu/hy-kube-backend-randomtask:ex2.09
+            image: tkasu/hy-kube-backend-randomtask:ex3.03
             imagePullPolicy: Always
             env:
               - name: API_URL
-                value: http://backend-svc:3456
+                value: http://backend-svc:3456/api
           restartPolicy: Never
