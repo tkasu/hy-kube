@@ -4,3 +4,5 @@ index_image.jpg
 index_state.json
 static/daily_pic.jpg
 server/public/assets/*.jpg
+manifests/secrets/postgres-pwd.yaml
+manifests/secrets/key.txt
