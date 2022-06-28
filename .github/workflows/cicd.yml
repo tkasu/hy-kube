@@ -194,7 +194,12 @@ jobs:
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
 
-  deploy-to-kubernetes:
+  deploy-project-to-kubernetes:
+    needs: [
+      build-and-push-project-backend,
+      build-and-push-project-randomtask,
+      build-and-push-project-frontend
+    ]
 
     runs-on: ubuntu-latest
 
@@ -220,6 +225,9 @@ jobs:
 
     - name: Set up Kustomize
       uses: imranismail/setup-kustomize@v1
+
+    - name: Set up KSOPS
+      run: curl -s https://raw.githubusercontent.com/viaduct-ai/kustomize-sops/master/scripts/install-ksops-archive.sh | bash
 
     - name: Deploy project to Kubernetes
       run: |-
