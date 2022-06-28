@@ -223,6 +223,9 @@ jobs:
     - name: Test gcloud CLI
       run: gcloud info
 
+    - name: Setup GKE credentials
+      run: gcloud container clusters get-credentials "$GKE_CLUSTER" --zone "$GKE_ZONE"
+
     - name: Set up Kustomize
       uses: imranismail/setup-kustomize@v1
 
@@ -232,7 +235,7 @@ jobs:
     - name: Deploy project to Kubernetes
       run: |-
         cd project
-        kubectl kustomize --enable-alpha-plugins . | kubectl apply -f
+        kubectl kustomize --enable-alpha-plugins . | kubectl apply -f -
         kubectl rollout status -f backend/manifests/deployment.yaml
         kubectl rollout status -f frontend/manifests/deployment.yaml
         kubectl get ingress -o wide --namespace hy-kube-project
