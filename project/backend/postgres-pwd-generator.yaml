@@ -1,0 +1,6 @@
+apiVersion: viaduct.ai/v1
+kind: ksops
+metadata:
+  name: postgres-password-generator
+files:
+  - ./manifests/secrets/postgres-pwd.enc.yaml

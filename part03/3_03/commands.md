@@ -22,12 +22,10 @@ make gcp-infra-preq gcp-infra-up gcp-sync-kubectl-creds
 
 ## Init secrets
 
-in project/backend/manifests/secrets
+Init (or update) the secret when setting up for the first time:
 
-
-Init secret when setting up for the first time:
-
-Create template for Secret (without saving it to version control):
+Create template for Secret (without saving it to version control) to
+project/backend/manifests/secrets:
 
 ```yml
 # project/backend/manifests/secrets/postgres-pwd.yaml
@@ -40,14 +38,25 @@ data:
   PASSWORD: QW5vdGhlclZlcnlCaWdBbmRJbXBvcnRhbnRTZWNyZXQ= # FIXME, remember to encode to base64
 ```
 
+Generate a new key:
 ```bash
-age-keygen -o key.txt
-
-sops --encrypt \
-       --age age1k0upvtn0gwftpep5kxq47xztxj7ulmfhk6t9ha82sd6r5jrjsegsdr0wua \  # FIXME WITH YOUR PUBLIC KEY
-       --encrypted-regex '^(data)$' \
-       postgres-pwd.yaml > postgres-pwd.enc.yaml
+age-keygen -o project/backend/manifests/secrets/key.txt
 ```
+
+Update public key in .sops.yaml:
+```yml
+# project/backend/manifests/secrets/.sops.yaml
+creation_rules:
+  - encrypted_regex: "^(data)$"
+    age: "age1k0upvtn0gwftpep5kxq47xztxj7ulmfhk6t9ha82sd6r5jrjsegsdr0wua" # FIXME
+```
+
+Encrypt the key:
+```
+make encrypt-project-secrets
+```
+
+Commit the updated versions of .sops.yaml and postgres-pwd.enc.yaml.
 
 ## Deploy manifests
 
