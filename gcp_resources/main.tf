@@ -13,6 +13,21 @@ data "google_container_engine_versions" "default" {
   version_prefix = "1.22."
 }
 
+resource "google_service_account" "github" {
+  account_id   = "github-sa"
+  display_name = "GitHub Service Account"
+}
+
+resource "google_service_account_key" "github_key" {
+  service_account_id = google_service_account.github.name
+}
+
+resource "google_project_iam_binding" "github_sa_kubernetes_admin_binding" {
+  project = var.project_id
+  role    = "roles/container.admin"
+  members = ["serviceAccount:${google_service_account.github.email}"]
+}
+
 resource "google_container_cluster" "primary" {
   name     = "${var.project_id}-gke-cluster"
   location = var.region
@@ -41,4 +56,9 @@ resource "google_container_node_pool" "primary_preemptible_nodes" {
       "https://www.googleapis.com/auth/cloud-platform"
     ]
   }
+}
+
+output "github_sa_key" {
+  sensitive = true
+  value = google_service_account_key.github_key.private_key
 }

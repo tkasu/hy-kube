@@ -193,3 +193,38 @@ jobs:
         push: true
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
+
+  deploy-to-kubernetes:
+
+    runs-on: ubuntu-latest
+
+    env:
+      PROJECT_ID: ${{ secrets.GKE_PROJECT }}
+      GKE_CLUSTER: ${{ secrets.GKE_PROJECT }}-gke-cluster
+      GKE_ZONE: europe-north1-b
+      SOPS_AGE_KEY:  ${{ secrets.SOPS_PRIVATE_KEY }}
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - id: auth
+      uses: 'google-github-actions/auth@v0'
+      with:
+        credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+
+    - name: Set up Cloud SDK
+      uses: google-github-actions/setup-gcloud@v0
+
+    - name: Test gcloud CLI
+      run: gcloud info
+
+    - name: Set up Kustomize
+      uses: imranismail/setup-kustomize@v1
+
+    - name: Deploy project to Kubernetes
+      run: |-
+        cd project
+        kubectl kustomize --enable-alpha-plugins . | kubectl apply -f
+        kubectl rollout status -f backend/manifests/deployment.yaml
+        kubectl rollout status -f frontend/manifests/deployment.yaml
+        kubectl get ingress -o wide --namespace hy-kube-project

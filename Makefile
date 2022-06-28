@@ -48,7 +48,10 @@ gcp-infra-down:
 	$(CD) gcp_resources && $(TERRAFORM) destroy
 
 gcp-sync-kubectl-creds:
-	gcloud container clusters get-credentials $(GCP_PROJECT_ID)-gke-cluster --zone=$(GCP_REGION)
+	$(GCLOUD) container clusters get-credentials $(GCP_PROJECT_ID)-gke-cluster --zone=$(GCP_REGION)
+
+gcp-show-github-sa-key:
+	@$(CD) gcp_resources && $(TERRAFORM) output -raw github_sa_key | base64 -d
 
 encrypt-project-secrets:
 	$(CD) project/backend/manifests/secrets \
