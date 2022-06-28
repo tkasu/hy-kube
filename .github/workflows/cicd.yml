@@ -206,7 +206,7 @@ jobs:
     env:
       PROJECT_ID: ${{ secrets.GKE_PROJECT }}
       GKE_CLUSTER: ${{ secrets.GKE_PROJECT }}-gke-cluster
-      GKE_ZONE: europe-north1-b
+      GKE_ZONE: europe-north1
       SOPS_AGE_KEY:  ${{ secrets.SOPS_PRIVATE_KEY }}
 
     steps:
