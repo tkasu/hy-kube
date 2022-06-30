@@ -192,7 +192,7 @@ jobs:
       run: |-
         docker build \
           -f Dockerfile.kube \
-          --tag "eu.gcr.io/$PROJECT_ID/$IMAGE \
+          --tag "eu.gcr.io/$PROJECT_ID/$IMAGE" \
         .
 
     - name: Publish Docker container to GCR
