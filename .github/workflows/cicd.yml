@@ -192,12 +192,12 @@ jobs:
       run: |-
         docker build \
           -f Dockerfile.kube \
-          --tag "eu.gcr.io/$PROJECT_ID/$IMAGE:${GITHUB_REF#refs/heads/}-$GITHUB_SHA" \
+          --tag "eu.gcr.io/$PROJECT_ID/$IMAGE \
         .
 
     - name: Publish Docker container to GCR
       run: |-
-        docker push "eu.gcr.io/$PROJECT_ID/$IMAGE:${GITHUB_REF#refs/heads/}-$GITHUB_SHA"
+        docker push "eu.gcr.io/$PROJECT_ID/$IMAGE"
 
   deploy-project-to-kubernetes:
     needs: [
