@@ -193,10 +193,10 @@ jobs:
       run: |-
         docker build \
           -f Dockerfile.kube \
-          --tag "eu.gcr.io/$PROJECT_ID/$IMAGE" \
+          --tag "$GKE_ZONE-docker.pkg.dev/$PROJECT_ID/$PROJECT_ID-default/$IMAGE" \
         .
 
-    - name: Publish Docker container to GCR
+    - name: Publish Docker container to GCP Artifact Registry
       run: |-
         docker push "$GKE_ZONE-docker.pkg.dev/$PROJECT_ID/$PROJECT_ID-default/$IMAGE"
 
