@@ -1,10 +1,6 @@
 name: Teardown
 
-on:
-  delete:
-    branches:
-      - 'master'
-      - 'develop'
+on: delete
 
 env:
   PROJECT_ID: ${{ secrets.GKE_PROJECT }}
@@ -13,6 +9,7 @@ env:
 jobs:
 
   delete-kubernetes-namespace-resources:
+    if: github.event.ref_type == 'branch'
 
     runs-on: ubuntu-latest
 
@@ -39,5 +36,5 @@ jobs:
     - name: Delete resources from Kubernetes namespace
       run: |-
         cd project
-        kubectl delete namespace hy-kube-project-${GITHUB_REF#refs/heads/} && kubectl create namespace hy-kube-project-${GITHUB_REF#refs/heads/}
-        kubectl get all --namespace hy-kube-project-${GITHUB_REF#refs/heads/}
+        kubectl delete namespace hy-kube-project-${{ github.event.ref }} && kubectl create namespace hy-kube-project-${{ github.event.ref }}
+        kubectl get all --namespace hy-kube-project-${{ github.event.ref }}
