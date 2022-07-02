@@ -170,6 +170,7 @@ jobs:
     env:
       PROJECT_ID: ${{ secrets.GKE_PROJECT }}
       IMAGE: hy-kube-frontend
+      GKE_ZONE: europe-north1
 
     defaults:
       run:
@@ -180,7 +181,7 @@ jobs:
 
     - name: Configure Docker gcr auth
       run: |-
-        gcloud --quiet auth configure-docker
+        gcloud --quiet auth configure-docker $GKE_ZONE-docker.pkg.dev
 
     - name: Extract metadata (tags, labels) for Docker
       id: meta
@@ -197,7 +198,7 @@ jobs:
 
     - name: Publish Docker container to GCR
       run: |-
-        docker push "eu.gcr.io/$PROJECT_ID/$IMAGE"
+        docker push "$GKE_ZONE-docker.pkg.dev/$PROJECT_ID/$PROJECT_ID-default/$IMAGE"
 
   deploy-project-to-kubernetes:
     needs: [
