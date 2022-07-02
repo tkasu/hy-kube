@@ -4,3 +4,10 @@ resources:
   - manifests/hy-kube-project-namespace.yaml
   - backend/
   - frontend/
+images:
+  - name: IMAGE_FRONTEND
+    newName: tkasu/hy-kube-frontend
+  - name: IMAGE_BACKEND
+    newName: tkasu/hy-kube-backend
+  - name: IMAGE_RANDOMTASK
+    newName: tkasu/hy-kube-backend-randomtask

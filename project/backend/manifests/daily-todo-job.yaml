@@ -11,7 +11,7 @@ spec:
         spec:
           containers:
           - name: randomtask
-            image: tkasu/hy-kube-backend-randomtask:ex3.03
+            image: IMAGE_RANDOMTASK
             imagePullPolicy: Always
             env:
               - name: API_URL

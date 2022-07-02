@@ -272,6 +272,10 @@ jobs:
     - name: Deploy project to Kubernetes
       run: |-
         cd project
+        kustomize edit set image \
+          IMAGE_BACKEND=$GKE_ZONE-docker.pkg.dev/$PROJECT_ID/$PROJECT_ID-default/$IMAGE_BACKEND:${GITHUB_REF#refs/heads/}-$GITHUB_SHA \
+          IMAGE_FRONTEND=$GKE_ZONE-docker.pkg.dev/$PROJECT_ID/$PROJECT_ID-default/$IMAGE_FRONTEND:${GITHUB_REF#refs/heads/}-$GITHUB_SHA \
+          IMAGE_RANDOMTASK=$GKE_ZONE-docker.pkg.dev/$PROJECT_ID/$PROJECT_ID-default/$IMAGE_RANDOMTASK:${GITHUB_REF#refs/heads/}-$GITHUB_SHA
         kubectl kustomize --enable-alpha-plugins . | kubectl apply -f -
         kubectl rollout status -f backend/manifests/deployment.yaml
         kubectl rollout status -f frontend/manifests/deployment.yaml
