@@ -141,12 +141,12 @@ jobs:
       run: |-
         docker build \
           -f Dockerfile.server \
-          --tag "$GKE_ZONE-docker.pkg.dev/$PROJECT_ID/$PROJECT_ID-default/$IMAGE_BACKEND" \
+          --tag "$GKE_ZONE-docker.pkg.dev/$PROJECT_ID/$PROJECT_ID-default/$IMAGE_BACKEND:${GITHUB_REF#refs/heads/}-$GITHUB_SHA" \
         .
 
     - name: Publish Docker container to GCP Artifact Registry
       run: |-
-        docker push "$GKE_ZONE-docker.pkg.dev/$PROJECT_ID/$PROJECT_ID-default/$IMAGE_BACKEND"
+        docker push "$GKE_ZONE-docker.pkg.dev/$PROJECT_ID/$PROJECT_ID-default/$IMAGE_BACKEND:${GITHUB_REF#refs/heads/}-$GITHUB_SHA"
 
   build-and-push-project-randomtask:
 
@@ -183,12 +183,12 @@ jobs:
       run: |-
         docker build \
           -f Dockerfile.randomtask \
-          --tag "$GKE_ZONE-docker.pkg.dev/$PROJECT_ID/$PROJECT_ID-default/$IMAGE_RANDOMTASK" \
+          --tag "$GKE_ZONE-docker.pkg.dev/$PROJECT_ID/$PROJECT_ID-default/$IMAGE_RANDOMTASK:${GITHUB_REF#refs/heads/}-$GITHUB_SHA" \
         .
 
     - name: Publish Docker container to GCP Artifact Registry
       run: |-
-        docker push "$GKE_ZONE-docker.pkg.dev/$PROJECT_ID/$PROJECT_ID-default/$IMAGE_RANDOMTASK"
+        docker push "$GKE_ZONE-docker.pkg.dev/$PROJECT_ID/$PROJECT_ID-default/$IMAGE_RANDOMTASK:${GITHUB_REF#refs/heads/}-$GITHUB_SHA"
 
   build-and-push-project-frontend:
 
