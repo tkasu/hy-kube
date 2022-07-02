@@ -131,12 +131,6 @@ jobs:
       run: |-
         gcloud --quiet auth configure-docker $GKE_ZONE-docker.pkg.dev
 
-    - name: Extract metadata (tags, labels) for Docker
-      id: meta
-      uses: docker/metadata-action@v4
-      with:
-        images: $IMAGE_BACKEND
-
     - name: Build Docker container
       run: |-
         docker build \
@@ -172,12 +166,6 @@ jobs:
     - name: Configure Docker gcr auth
       run: |-
         gcloud --quiet auth configure-docker $GKE_ZONE-docker.pkg.dev
-
-    - name: Extract metadata (tags, labels) for Docker
-      id: meta
-      uses: docker/metadata-action@v4
-      with:
-        images: $IMAGE_RANDOMTASK
 
     - name: Build Docker container
       run: |-
@@ -215,12 +203,6 @@ jobs:
     - name: Configure Docker gcr auth
       run: |-
         gcloud --quiet auth configure-docker $GKE_ZONE-docker.pkg.dev
-
-    - name: Extract metadata (tags, labels) for Docker
-      id: meta
-      uses: docker/metadata-action@v4
-      with:
-        images: $IMAGE_FRONTEND
 
     - name: Build Docker container
       run: |-
