@@ -28,6 +28,23 @@ resource "google_project_iam_binding" "github_sa_kubernetes_admin_binding" {
   members = ["serviceAccount:${google_service_account.github.email}"]
 }
 
+resource "google_artifact_registry_repository" "default" {
+  provider = google-beta
+
+  location      = var.region
+  repository_id = "${var.project_id}-default"
+  format        = "DOCKER"
+}
+
+resource "google_artifact_registry_repository_iam_member" "github_default_writer" {
+  provider = google-beta
+
+  location   = google_artifact_registry_repository.default.location
+  repository = google_artifact_registry_repository.default.name
+  role       = "roles/artifactregistry.writer"
+  member     = "serviceAccount:${google_service_account.github.email}"
+}
+
 resource "google_container_cluster" "primary" {
   name     = "${var.project_id}-gke-cluster"
   location = var.region
@@ -42,17 +59,17 @@ resource "google_container_cluster" "primary" {
 }
 
 resource "google_container_node_pool" "primary_preemptible_nodes" {
-  name       = "${var.project_id}-node-pool"
-  location   = var.region
-  cluster    = google_container_cluster.primary.name
-  
+  name     = "${var.project_id}-node-pool"
+  location = var.region
+  cluster  = google_container_cluster.primary.name
+
   node_count = 1
-  version = data.google_container_engine_versions.default.latest_node_version
+  version    = data.google_container_engine_versions.default.latest_node_version
 
   node_config {
     preemptible  = true
     machine_type = "e2-medium"
-    oauth_scopes    = [
+    oauth_scopes = [
       "https://www.googleapis.com/auth/cloud-platform"
     ]
   }
@@ -60,5 +77,5 @@ resource "google_container_node_pool" "primary_preemptible_nodes" {
 
 output "github_sa_key" {
   sensitive = true
-  value = google_service_account_key.github_key.private_key
+  value     = google_service_account_key.github_key.private_key
 }

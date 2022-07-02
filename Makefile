@@ -47,6 +47,9 @@ gcp-infra-up:
 gcp-infra-down:
 	$(CD) gcp_resources && $(TERRAFORM) destroy
 
+gcp-infra-format:
+	$(CD) gcp_resources && $(TERRAFORM) fmt
+
 gcp-sync-kubectl-creds:
 	$(GCLOUD) container clusters get-credentials $(GCP_PROJECT_ID)-gke-cluster --zone=$(GCP_REGION)
 
