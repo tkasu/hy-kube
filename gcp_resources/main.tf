@@ -22,9 +22,9 @@ resource "google_service_account_key" "github_key" {
   service_account_id = google_service_account.github.name
 }
 
-resource "google_project_iam_binding" "github_sa_kubernetes_admin_binding" {
+resource "google_project_iam_binding" "github_sa_kubernetes_developer_binding" {
   project = var.project_id
-  role    = "roles/container.admin"
+  role    = "roles/container.developer"
   members = ["serviceAccount:${google_service_account.github.email}"]
 }
 
