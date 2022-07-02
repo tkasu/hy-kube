@@ -72,7 +72,10 @@ apply-pingpong-kube: apply-pingpong-kube-preq
 apply-mainapp-kube-preq:
 	$(K) apply -f manifests_global/mainapp-namespace.yaml
 
-apply-project-kube:
+apply-project-kube-preq:
+	$(K) create namespace hy-kube-project || true
+
+apply-project-kube: apply-project-kube-preq
 	$(CD) project \
 	&& SOPS_AGE_KEY_FILE=$(PWD)/project/backend/manifests/secrets/key.txt \
 	$(K) kustomize --enable-alpha-plugins . | $(K) apply -f -
