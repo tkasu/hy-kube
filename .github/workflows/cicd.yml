@@ -7,6 +7,11 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
+  PROJECT_ID: ${{ secrets.GKE_PROJECT }}
+  GKE_ZONE: europe-north1
+  IMAGE_BACKEND: hy-kube-backend
+  IMAGE_FRONTEND: hy-kube-frontend
+  IMAGE_RANDOMTASK: hy-kube-randomtask
 
 jobs:
   build-and-push-pingpong:
@@ -18,7 +23,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-      
+
     - name: Log in to Docker Hub
       uses: docker/login-action@v2
       with:
@@ -111,26 +116,37 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: Log in to Docker Hub
-      uses: docker/login-action@v2
+    - id: auth
+      uses: 'google-github-actions/auth@v0'
       with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
+        credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+
+    - name: Set up Cloud SDK
+      uses: google-github-actions/setup-gcloud@v0
+
+    - name: Test gcloud CLI
+      run: gcloud info
+
+    - name: Configure Docker gcr auth
+      run: |-
+        gcloud --quiet auth configure-docker $GKE_ZONE-docker.pkg.dev
 
     - name: Extract metadata (tags, labels) for Docker
       id: meta
       uses: docker/metadata-action@v4
       with:
-        images: tkasu/hy-kube-backend
+        images: $IMAGE_BACKEND
 
-    - name: Build and push Docker image
-      uses: docker/build-push-action@v3
-      with:
-        context: ./project/backend
-        file: ./project/backend/Dockerfile.server
-        push: true
-        tags: ${{ steps.meta.outputs.tags }}
-        labels: ${{ steps.meta.outputs.labels }}
+    - name: Build Docker container
+      run: |-
+        docker build \
+          -f Dockerfile.kube \
+          --tag "$GKE_ZONE-docker.pkg.dev/$PROJECT_ID/$PROJECT_ID-default/$IMAGE_BACKEND" \
+        .
+
+    - name: Publish Docker container to GCP Artifact Registry
+      run: |-
+        docker push "$GKE_ZONE-docker.pkg.dev/$PROJECT_ID/$PROJECT_ID-default/$IMAGE_BACKEND"
 
   build-and-push-project-randomtask:
 
@@ -141,44 +157,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-
-    - name: Log in to Docker Hub
-      uses: docker/login-action@v2
-      with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
-
-    - name: Extract metadata (tags, labels) for Docker
-      id: meta
-      uses: docker/metadata-action@v4
-      with:
-        images: tkasu/hy-kube-backend-randomtask
-
-    - name: Build and push Docker image
-      uses: docker/build-push-action@v3
-      with:
-        context: ./project/backend
-        file: ./project/backend/Dockerfile.randomtask
-        push: true
-        tags: ${{ steps.meta.outputs.tags }}
-        labels: ${{ steps.meta.outputs.labels }}
-
-  build-and-push-project-frontend:
-
-    runs-on: ubuntu-latest
-
-    env:
-      PROJECT_ID: ${{ secrets.GKE_PROJECT }}
-      IMAGE: hy-kube-frontend
-      GKE_ZONE: europe-north1
-
-    defaults:
-      run:
-        working-directory: ./project/frontend
-
-    steps:
-    - uses: actions/checkout@v3
-
 
     - id: auth
       uses: 'google-github-actions/auth@v0'
@@ -199,18 +177,61 @@ jobs:
       id: meta
       uses: docker/metadata-action@v4
       with:
-        images: tkasu/hy-kube-frontend
+        images: $IMAGE_RANDOMTASK
 
     - name: Build Docker container
       run: |-
         docker build \
           -f Dockerfile.kube \
-          --tag "$GKE_ZONE-docker.pkg.dev/$PROJECT_ID/$PROJECT_ID-default/$IMAGE" \
+          --tag "$GKE_ZONE-docker.pkg.dev/$PROJECT_ID/$PROJECT_ID-default/$IMAGE_RANDOMTASK" \
         .
 
     - name: Publish Docker container to GCP Artifact Registry
       run: |-
-        docker push "$GKE_ZONE-docker.pkg.dev/$PROJECT_ID/$PROJECT_ID-default/$IMAGE"
+        docker push "$GKE_ZONE-docker.pkg.dev/$PROJECT_ID/$PROJECT_ID-default/$IMAGE_RANDOMTASK"
+
+  build-and-push-project-frontend:
+
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./project/frontend
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - id: auth
+      uses: 'google-github-actions/auth@v0'
+      with:
+        credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+
+    - name: Set up Cloud SDK
+      uses: google-github-actions/setup-gcloud@v0
+
+    - name: Test gcloud CLI
+      run: gcloud info
+
+    - name: Configure Docker gcr auth
+      run: |-
+        gcloud --quiet auth configure-docker $GKE_ZONE-docker.pkg.dev
+
+    - name: Extract metadata (tags, labels) for Docker
+      id: meta
+      uses: docker/metadata-action@v4
+      with:
+        images: $IMAGE_FRONTEND
+
+    - name: Build Docker container
+      run: |-
+        docker build \
+          -f Dockerfile.kube \
+          --tag "$GKE_ZONE-docker.pkg.dev/$PROJECT_ID/$PROJECT_ID-default/$IMAGE_FRONTEND" \
+        .
+
+    - name: Publish Docker container to GCP Artifact Registry
+      run: |-
+        docker push "$GKE_ZONE-docker.pkg.dev/$PROJECT_ID/$PROJECT_ID-default/$IMAGE_FRONTEND"
 
   deploy-project-to-kubernetes:
     needs: [
@@ -222,10 +243,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      PROJECT_ID: ${{ secrets.GKE_PROJECT }}
-      IMAGE_PROJECT_FRONTEND: hy-kube-frontend
       GKE_CLUSTER: ${{ secrets.GKE_PROJECT }}-gke-cluster
-      GKE_ZONE: europe-north1
       SOPS_AGE_KEY:  ${{ secrets.SOPS_PRIVATE_KEY }}
 
     steps:
