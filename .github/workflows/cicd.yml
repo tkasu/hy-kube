@@ -231,7 +231,7 @@ jobs:
 
     - name: Publish Docker container to GCP Artifact Registry
       run: |-
-        docker push "$GKE_ZONE-docker.pkg.dev/$PROJECT_ID/$PROJECT_ID-default/$IMAGE_FRONTEND${GITHUB_REF#refs/heads/}-$GITHUB_SHA"
+        docker push "$GKE_ZONE-docker.pkg.dev/$PROJECT_ID/$PROJECT_ID-default/$IMAGE_FRONTEND:${GITHUB_REF#refs/heads/}-$GITHUB_SHA"
 
   deploy-project-to-kubernetes:
     needs: [
