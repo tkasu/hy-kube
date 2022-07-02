@@ -264,4 +264,4 @@ jobs:
         kubectl kustomize --enable-alpha-plugins . | kubectl apply -f -
         kubectl rollout status deployment backend-dep --namespace hy-kube-project-${GITHUB_REF#refs/heads/}
         kubectl rollout status deployment frontend-dep --namespace hy-kube-project-${GITHUB_REF#refs/heads/}
-        kubectl get ingress -o wide --namespace hy-kube-project
+        kubectl get ingress -o wide --namespace hy-kube-project-${GITHUB_REF#refs/heads/}
