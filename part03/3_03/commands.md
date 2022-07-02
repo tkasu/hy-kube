@@ -10,17 +10,13 @@ git checkout ex3.03
 
 ## Building the applications
 
-Push the tag the github with 'ex'-prefix, e.g. 'ex3.03' and the Github Action will publish the project to Docker Hub repository: 'tkasu/hy-kube-*'
-
-## Create cluster, other needed GCP resources and sync kubectl creds
+### Create cluster, other needed GCP resources and sync kubectl creds
 
 ```
 make gcp-infra-preq gcp-infra-up gcp-sync-kubectl-creds
 ```
 
-## Deployment
-
-## Init secrets
+### Init secrets
 
 Init (or update) the secret when setting up for the first time:
 
@@ -58,33 +54,48 @@ make encrypt-project-secrets
 
 Commit the updated versions of .sops.yaml and postgres-pwd.enc.yaml.
 
-## Deploy manifests
+### Github Actions configuration
 
-```
-make apply-project-kube
-```
+Github Action will build the project when pushed to 'master'.
+
+The following Github secrets are needed:
+
+* GCP_CREDENTIALS - GCP Credentials of the GCP GitHub service account
+  * Can be shown in terminal with `make gcp-infra-preq gcp-infra-up gcp-show-github-sa-key`
+* GKE_PROJECT - Name of the Google cloud project
+* SOPS_PRIVATE_KEY - Private key used to encrypt the secrets, see the 'Init secrets'.
+* DOCKER_PASSWORD - Dockerhub password, only needed for pingpong and mainapp
+* DOCKER_USERNAME - Dockerhub username, only needed for pingpong and mainap
+
+## Deployment
+
+### Deploy manifests
+
+Github action will automatically deploy project manifests to Kubernetes.
 
 ## Testing
 
 ```bash
 $ kubectl get ingress --namespace hy-kube-project
 NAME              CLASS    HOSTS   ADDRESS          PORTS   AGE
-backend-ingress   <none>   *       34.117.104.209   80      6m12s
+backend-ingress   <none>   *       34.111.105.205   80      40m
 
 $ curl 34.117.104.209
 <!doctype html><html lang="en"><head><meta charset="utf-8"/><link rel="icon" href="/favicon.ico"/><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="theme-color" content="#000000"/><meta name="description" content="Web site created using create-react-app"/><link rel="apple-touch-icon" href="/logo192.png"/><title>hy-kube app!</title>...
 
-$ curl 34.117.104.209/api/todos
-{"todos":[]}% 
+$ curl 34.111.105.205/api/todos
+{"todos":[]}%
 
-$ curl -X POST 34.117.104.209/api/todo \
+$ curl -X POST 34.111.105.205/api/todo \
    -H 'Content-Type: application/json' \
    -d '{"task":"Hello GKE!"}'
-{"task":"Hello GKE!"}%    
+{"task":"Hello GKE!"}%
 
-$ curl 34.117.104.209/api/todos
-{"todos":[{"task":"Hello GKE!"}]}%  
+$ curl 34.111.105.205/api/todos
+{"todos":[{"task":"Hello GKE!"}]}%
 ```
+
+Tested that adding and getting TODOs works from a browser as well.
 
 ## Destroy cluster & other needed GCP resources
 

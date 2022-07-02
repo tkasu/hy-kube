@@ -26,3 +26,17 @@ Main project for the course, contains subfolders for backend and frontend.
 ## Requirements
 
 Kubernetes manifests are tested GKE, see infra definition in gcp_resources/ for GKE versions.
+
+GCP infra can be deployed with:
+
+```
+make gcp-infra-up
+```
+
+And destroyed with:
+
+```
+make gcp-infra-up
+```
+
+For detailed instructions, see the latest section from part0N folders.
