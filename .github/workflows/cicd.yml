@@ -179,6 +179,18 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
+
+    - id: auth
+      uses: 'google-github-actions/auth@v0'
+      with:
+        credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+
+    - name: Set up Cloud SDK
+      uses: google-github-actions/setup-gcloud@v0
+
+    - name: Test gcloud CLI
+      run: gcloud info
+
     - name: Configure Docker gcr auth
       run: |-
         gcloud --quiet auth configure-docker $GKE_ZONE-docker.pkg.dev
