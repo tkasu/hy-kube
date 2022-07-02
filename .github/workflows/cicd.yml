@@ -2,8 +2,8 @@ name: CI&CD
 
 on:
   push:
-    tags:
-      - ex**
+    branches:
+      - 'master'
 
 env:
   CARGO_TERM_COLOR: always
@@ -226,12 +226,12 @@ jobs:
       run: |-
         docker build \
           -f Dockerfile.kube \
-          --tag "$GKE_ZONE-docker.pkg.dev/$PROJECT_ID/$PROJECT_ID-default/$IMAGE_FRONTEND" \
+          --tag "$GKE_ZONE-docker.pkg.dev/$PROJECT_ID/$PROJECT_ID-default/$IMAGE_FRONTEND:${GITHUB_REF#refs/heads/}-$GITHUB_SHA" \
         .
 
     - name: Publish Docker container to GCP Artifact Registry
       run: |-
-        docker push "$GKE_ZONE-docker.pkg.dev/$PROJECT_ID/$PROJECT_ID-default/$IMAGE_FRONTEND"
+        docker push "$GKE_ZONE-docker.pkg.dev/$PROJECT_ID/$PROJECT_ID-default/$IMAGE_FRONTEND${GITHUB_REF#refs/heads/}-$GITHUB_SHA"
 
   deploy-project-to-kubernetes:
     needs: [
