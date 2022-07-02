@@ -262,6 +262,6 @@ jobs:
           IMAGE_FRONTEND=$GKE_ZONE-docker.pkg.dev/$PROJECT_ID/$PROJECT_ID-default/$IMAGE_FRONTEND:${GITHUB_REF#refs/heads/}-$GITHUB_SHA \
           IMAGE_RANDOMTASK=$GKE_ZONE-docker.pkg.dev/$PROJECT_ID/$PROJECT_ID-default/$IMAGE_RANDOMTASK:${GITHUB_REF#refs/heads/}-$GITHUB_SHA
         kubectl kustomize --enable-alpha-plugins . | kubectl apply -f -
-        kubectl rollout status deployment $IMAGE_BACKEND
-        kubectl rollout status deployment $FRONTEND_BACKEND
+        kubectl rollout status deployment backend-dep --namespace hy-kube-project-${GITHUB_REF#refs/heads/}
+        kubectl rollout status deployment frontend-dep --namespace hy-kube-project-${GITHUB_REF#refs/heads/}
         kubectl get ingress -o wide --namespace hy-kube-project
