@@ -1,0 +1,43 @@
+name: Teardown
+
+on:
+  delete:
+    branches:
+      - 'master'
+      - 'develop'
+
+env:
+  PROJECT_ID: ${{ secrets.GKE_PROJECT }}
+  GKE_ZONE: europe-north1
+
+jobs:
+
+  delete-kubernetes-namespace-resources:
+
+    runs-on: ubuntu-latest
+
+    env:
+      GKE_CLUSTER: ${{ secrets.GKE_PROJECT }}-gke-cluster
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - id: auth
+      uses: 'google-github-actions/auth@v0'
+      with:
+        credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+
+    - name: Set up Cloud SDK
+      uses: google-github-actions/setup-gcloud@v0
+
+    - name: Test gcloud CLI
+      run: gcloud info
+
+    - name: Setup GKE credentials
+      run: gcloud container clusters get-credentials "$GKE_CLUSTER" --zone "$GKE_ZONE"
+
+    - name: Delete resources from Kubernetes namespace
+      run: |-
+        cd project
+        kubectl delete namespace hy-kube-project-${GITHUB_REF#refs/heads/} && kubectl create namespace hy-kube-project-${GITHUB_REF#refs/heads/}
+        kubectl get all --namespace hy-kube-project-${GITHUB_REF#refs/heads/}
