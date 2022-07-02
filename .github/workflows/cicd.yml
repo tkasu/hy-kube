@@ -140,7 +140,7 @@ jobs:
     - name: Build Docker container
       run: |-
         docker build \
-          -f Dockerfile.kube \
+          -f Dockerfile.server \
           --tag "$GKE_ZONE-docker.pkg.dev/$PROJECT_ID/$PROJECT_ID-default/$IMAGE_BACKEND" \
         .
 
@@ -182,7 +182,7 @@ jobs:
     - name: Build Docker container
       run: |-
         docker build \
-          -f Dockerfile.kube \
+          -f Dockerfile.randomtask \
           --tag "$GKE_ZONE-docker.pkg.dev/$PROJECT_ID/$PROJECT_ID-default/$IMAGE_RANDOMTASK" \
         .
 
