@@ -4,6 +4,9 @@ version = "0.1.0"
 authors = ["Tomi Kasurinen <tomi.kasurinen@gmail.com>"]
 edition = "2021"
 
+[features]
+tokio-rt = ["sqlx/runtime-tokio-native-tls"]
+
 [dependencies]
 bytes = "1.1.0"
 chrono =  { version = "0.4", features = ["serde"] }
