@@ -259,7 +259,7 @@ jobs:
 
         IP_ADDR=$(gcloud sql instances list --format json | jq '.[]|select(.name | startswith("$PROJECT_ID"))' | jq '.ipAddresses[0].ipAddress')
         kubectl delete secret postgres-ip --namespace hy-kube-project-${GITHUB_REF#refs/heads/} || true
-        create secret generic --namespace hy-kube-project-${GITHUB_REF#refs/heads/} postgres-ip --from-literal=POSTGRES_IP=$IP_ADDR
+        kubectl create secret generic --namespace hy-kube-project-${GITHUB_REF#refs/heads/} postgres-ip --from-literal=POSTGRES_IP=$IP_ADDR
 
         kustomize edit set namespace hy-kube-project-${GITHUB_REF#refs/heads/}
         kustomize edit set image \
