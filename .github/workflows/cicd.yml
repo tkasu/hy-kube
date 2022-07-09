@@ -268,8 +268,8 @@ jobs:
           IMAGE_RANDOMTASK=$GKE_ZONE-docker.pkg.dev/$PROJECT_ID/$PROJECT_ID-default/$IMAGE_RANDOMTASK:${GITHUB_REF#refs/heads/}-$GITHUB_SHA
         kubectl kustomize --enable-alpha-plugins . | kubectl apply -f -
 
-        POSTGRES_PASS=$(kubectl get secrets/postgres-password --namespace hy-kube-project-${GITHUB_REF#refs/heads/} --template {{.data.PASSWORD}} | base64 -d))
-        SQL_INSTANCE=$(gcloud sql instances list --format json | jq '.[]|select(.name | startswith("PROJECT_ID"))' | jq '.name'))
+        POSTGRES_PASS=$(kubectl get secrets/postgres-password --namespace hy-kube-project-${GITHUB_REF#refs/heads/} --template {{.data.PASSWORD}} | base64 -d)
+        SQL_INSTANCE=$(gcloud sql instances list --format json | jq '.[]|select(.name | startswith("PROJECT_ID"))' | jq '.name')
         gcloud sql users set-password postgres --instance $SQL_INSTANCE --password $POSTGRES_PASS
 
         kubectl rollout status deployment backend-dep --namespace hy-kube-project-${GITHUB_REF#refs/heads/}
