@@ -257,7 +257,7 @@ jobs:
         cd project
         kubectl create namespace hy-kube-project-${GITHUB_REF#refs/heads/} || true
 
-        IP_ADDR=$(gcloud sql instances list --format json | jq '.[]|select(.name | startswith("$PROJECT_ID"))' | jq '.ipAddresses[0].ipAddress')
+        IP_ADDR=$(gcloud sql instances list --format json | jq --arg prj $PROJECT_ID '.[]|select(.name | startswith($prj))' | jq '.ipAddresses[0].ipAddress')
         kubectl delete secret postgres-ip --namespace hy-kube-project-${GITHUB_REF#refs/heads/} || true
         kubectl create secret generic --namespace hy-kube-project-${GITHUB_REF#refs/heads/} postgres-ip --from-literal=POSTGRES_IP=$IP_ADDR
 
@@ -269,7 +269,7 @@ jobs:
         kubectl kustomize --enable-alpha-plugins . | kubectl apply -f -
 
         POSTGRES_PASS=$(kubectl get secrets/postgres-password --namespace hy-kube-project-${GITHUB_REF#refs/heads/} --template {{.data.PASSWORD}} | base64 -d)
-        SQL_INSTANCE=$(gcloud sql instances list --format json | jq '.[]|select(.name | startswith("PROJECT_ID"))' | jq '.name')
+        SQL_INSTANCE=$(gcloud sql instances list --format json | jq --arg prj $PROJECT_ID '.[]|select(.name | startswith($prj))' | jq '.name')
         gcloud sql users set-password postgres --instance $SQL_INSTANCE --password $POSTGRES_PASS
 
         kubectl rollout status deployment backend-dep --namespace hy-kube-project-${GITHUB_REF#refs/heads/}
