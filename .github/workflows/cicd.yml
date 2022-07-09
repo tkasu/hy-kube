@@ -256,12 +256,22 @@ jobs:
       run: |-
         cd project
         kubectl create namespace hy-kube-project-${GITHUB_REF#refs/heads/} || true
+
+        IP_ADDR=$(gcloud sql instances list --format json | jq '.[]|select(.name | startswith("$PROJECT_ID"))' | jq '.ipAddresses[0].ipAddress')
+        kubectl delete secret postgres-ip --namespace hy-kube-project-${GITHUB_REF#refs/heads/} || true
+        create secret generic --namespace hy-kube-project-${GITHUB_REF#refs/heads/} postgres-ip --from-literal=POSTGRES_IP=$IP_ADDR
+
         kustomize edit set namespace hy-kube-project-${GITHUB_REF#refs/heads/}
         kustomize edit set image \
           IMAGE_BACKEND=$GKE_ZONE-docker.pkg.dev/$PROJECT_ID/$PROJECT_ID-default/$IMAGE_BACKEND:${GITHUB_REF#refs/heads/}-$GITHUB_SHA \
           IMAGE_FRONTEND=$GKE_ZONE-docker.pkg.dev/$PROJECT_ID/$PROJECT_ID-default/$IMAGE_FRONTEND:${GITHUB_REF#refs/heads/}-$GITHUB_SHA \
           IMAGE_RANDOMTASK=$GKE_ZONE-docker.pkg.dev/$PROJECT_ID/$PROJECT_ID-default/$IMAGE_RANDOMTASK:${GITHUB_REF#refs/heads/}-$GITHUB_SHA
         kubectl kustomize --enable-alpha-plugins . | kubectl apply -f -
+
+        POSTGRES_PASS=$(kubectl get secrets/postgres-password --namespace hy-kube-project-${GITHUB_REF#refs/heads/} --template {{.data.PASSWORD}} | base64 -d))
+        SQL_INSTANCE=$(gcloud sql instances list --format json | jq '.[]|select(.name | startswith("PROJECT_ID"))' | jq '.name'))
+        gcloud sql users set-password postgres --instance $SQL_INSTANCE --password $POSTGRES_PASS
+
         kubectl rollout status deployment backend-dep --namespace hy-kube-project-${GITHUB_REF#refs/heads/}
         kubectl rollout status deployment frontend-dep --namespace hy-kube-project-${GITHUB_REF#refs/heads/}
         kubectl get ingress -o wide --namespace hy-kube-project-${GITHUB_REF#refs/heads/}

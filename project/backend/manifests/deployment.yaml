@@ -35,7 +35,12 @@ spec:
                 secretKeyRef:
                   name: postgres-password
                   key: PASSWORD
+            - name: POSTGRES_IP
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-ip
+                  key: POSTGRES_IP
             - name: DATABASE_URL
-              value: postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@project-db-svc/$(POSTGRES_DB)
+              value: postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@$(POSTGRES_IP)/$(POSTGRES_DB)?sslmode=disable
             - name: ROCKET_DATABASES
               value: '{projectdb={url="$(DATABASE_URL)"}}'

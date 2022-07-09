@@ -6,8 +6,8 @@ resources:
 namespace: hy-kube-project
 images:
   - name: IMAGE_FRONTEND
-    newName: tkasu/hy-kube-frontend
+    newName: europe-north1-docker.pkg.dev/dwk-gke-354607/dwk-gke-354607-default/hy-kube-frontend
   - name: IMAGE_BACKEND
-    newName: tkasu/hy-kube-backend
+    newName: europe-north1-docker.pkg.dev/dwk-gke-354607/dwk-gke-354607-default/hy-kube-backend
   - name: IMAGE_RANDOMTASK
-    newName: tkasu/hy-kube-backend-randomtask
+    newName: europe-north1-docker.pkg.dev/dwk-gke-354607/dwk-gke-354607-default/hy-kube-randomtask

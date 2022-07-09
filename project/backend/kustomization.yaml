@@ -7,8 +7,6 @@ resources:
   - manifests/ingress.yaml
   - manifests/persistentvolumeclaim.yaml
   - manifests/postgres-config.yaml
-  - manifests/postgres-service.yaml
-  - manifests/postgres-stateful.yaml
   - manifests/service.yaml
 generators:
   - postgres-pwd-generator.yaml

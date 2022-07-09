@@ -72,13 +72,29 @@ apply-pingpong-kube: apply-pingpong-kube-preq
 apply-mainapp-kube-preq:
 	$(K) apply -f manifests_global/mainapp-namespace.yaml
 
-apply-project-kube-preq:
+set-project-postgres-password:
+	$(eval POSTGRES_PASS := $(shell kubectl get secrets/postgres-password --namespace hy-kube-project --template {{.data.PASSWORD}} | base64 -d))
+	$(eval SQL_INSTANCE := $(shell gcloud sql instances list --format json | jq '.[]|select(.name | startswith("$(GCP_PROJECT_ID)"))' | jq '.name'))
+	@gcloud sql users set-password postgres --instance $(SQL_INSTANCE) --password $(POSTGRES_PASS)
+
+apply-project-postgres-ip-secret:
+	$(eval IP_ADDR := $(shell gcloud sql instances list --format json | jq '.[]|select(.name | startswith("$(GCP_PROJECT_ID)"))' | jq '.ipAddresses[0].ipAddress'))
+	$(K) delete secret postgres-ip --namespace hy-kube-project || true
+	$(K) create secret generic --namespace hy-kube-project postgres-ip --from-literal=POSTGRES_IP=$(IP_ADDR)
+
+apply-project-kube-namespace:
 	$(K) create namespace hy-kube-project || true
 
-apply-project-kube: apply-project-kube-preq
+apply-project-kube-preq: apply-project-kube-namespace apply-project-postgres-ip-secret
+	:
+
+apply-project-kube-manifests:
 	$(CD) project \
 	&& SOPS_AGE_KEY_FILE=$(PWD)/project/backend/manifests/secrets/key.txt \
 	$(K) kustomize --enable-alpha-plugins . | $(K) apply -f -
+
+apply-project-kube: apply-project-kube-preq apply-project-kube-manifests  set-project-postgres-password
+	:
 
 apply-mainapp-kube: apply-mainapp-kube-preq
 	$(CD) mainapp && $(K) apply -f manifests/

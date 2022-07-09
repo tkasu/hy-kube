@@ -7,5 +7,4 @@ metadata:
     app: project-db
 data:
   POSTGRES_DB: projectdb
-  POSTGRES_USER: admin
-
+  POSTGRES_USER: postgres

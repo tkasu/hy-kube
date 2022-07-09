@@ -45,9 +45,82 @@ resource "google_artifact_registry_repository_iam_member" "github_default_writer
   member     = "serviceAccount:${google_service_account.github.email}"
 }
 
+resource "google_compute_global_address" "sql_private_ip_address" {
+  name          = "private-ip-address"
+  purpose       = "VPC_PEERING"
+  address_type  = "INTERNAL"
+  prefix_length = 16
+  network       = google_compute_network.gke_vpc.self_link
+}
+
+resource "google_service_networking_connection" "sql_private_vpc_connection" {
+  network                 = google_compute_network.gke_vpc.self_link
+  service                 = "servicenetworking.googleapis.com"
+  reserved_peering_ranges = [google_compute_global_address.sql_private_ip_address.name]
+}
+
+resource "random_id" "db_suffix" {
+  byte_length = 4
+}
+
+resource "google_sql_database_instance" "project_db" {
+  depends_on = [
+    google_service_networking_connection.sql_private_vpc_connection
+  ]
+
+  name             = "${var.project_id}-project-db-${random_id.db_suffix.dec}"
+  database_version = "POSTGRES_14"
+  region           = var.region
+
+  # This is for development only,
+  # no real production use case
+  deletion_protection = false
+
+  settings {
+    tier = "db-f1-micro"
+
+    ip_configuration {
+      ipv4_enabled    = false
+      private_network = google_compute_network.gke_vpc.id
+    }
+  }
+}
+
+resource "google_sql_database" "project_sql_db" {
+  name     = "projectdb"
+  instance = google_sql_database_instance.project_db.name
+}
+
+resource "google_sql_user" "postgres" {
+  name     = "postgres"
+  instance = google_sql_database_instance.project_db.name
+  password = "suchSecret"
+}
+
+resource "google_compute_network" "gke_vpc" {
+  name                    = "${var.project_id}-kube-vpc"
+  auto_create_subnetworks = false
+}
+
+resource "google_compute_subnetwork" "gke_private_subnet" {
+  name          = "${var.project_id}-kube-private-subnet"
+  region        = var.region
+  network       = google_compute_network.gke_vpc.self_link
+  ip_cidr_range = "192.168.0.0/16"
+}
+
 resource "google_container_cluster" "primary" {
   name     = "${var.project_id}-gke-cluster"
   location = var.region
+
+  networking_mode = "VPC_NATIVE"
+  network         = google_compute_network.gke_vpc.self_link
+  subnetwork      = google_compute_subnetwork.gke_private_subnet.self_link
+
+  ip_allocation_policy {
+    cluster_ipv4_cidr_block  = "/16"
+    services_ipv4_cidr_block = "/16"
+  }
 
   # We can't create a cluster with no node pool defined, but we want to only use
   # separately managed node pools. So we create the smallest possible default
