@@ -45,6 +45,24 @@ resource "google_artifact_registry_repository_iam_member" "github_default_writer
   member     = "serviceAccount:${google_service_account.github.email}"
 }
 
+resource "google_project_iam_custom_role" "github_sql_role" {
+  role_id     = "github_sql_role"
+  title       = "GitHub SQL Role"
+  description = "Role for GitHub actions to access Cloud SQL."
+  permissions = [
+    "cloudsql.instances.list",
+    "cloudsql.instances.get",
+    "cloudsql.users.list",
+    "cloudsql.users.update",
+  ]
+}
+
+resource "google_project_iam_binding" "github_sa_sql_role_binding" {
+  project = var.project_id
+  role    = google_project_iam_custom_role.github_sql_role.name
+  members = ["serviceAccount:${google_service_account.github.email}"]
+}
+
 resource "google_compute_global_address" "sql_private_ip_address" {
   name          = "private-ip-address"
   purpose       = "VPC_PEERING"
