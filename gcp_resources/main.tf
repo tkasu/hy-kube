@@ -109,12 +109,6 @@ resource "google_sql_database" "project_sql_db" {
   instance = google_sql_database_instance.project_db.name
 }
 
-resource "google_sql_user" "postgres" {
-  name     = "postgres"
-  instance = google_sql_database_instance.project_db.name
-  password = "suchSecret"
-}
-
 resource "google_compute_network" "gke_vpc" {
   name                    = "${var.project_id}-kube-vpc"
   auto_create_subnetworks = false
