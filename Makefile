@@ -104,3 +104,6 @@ delete-pingpong-kube:
 
 delete-mainapp-kube:
 	$(CD) mainapp && $(K) delete -f manifests/
+
+delete-project-kube:
+	$(K) delete namespace hy-kube-project && $(K) create namespace hy-kube-project

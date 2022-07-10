@@ -27,6 +27,8 @@ Main project for the course, contains subfolders for backend and frontend.
 
 Kubernetes manifests are tested GKE, see infra definition in gcp_resources/ for GKE versions.
 
+For SQL backend, GCP Cloud SQL for Postgres is used to get a fully managed database.
+
 GCP infra can be deployed with:
 
 ```
