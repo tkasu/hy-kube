@@ -19,6 +19,10 @@ spec:
       containers:
         - name: mainapp-reader
           image: tkasu/hy-kube-mainapp-reader:ex3.02
+          resources:
+            limits:
+              cpu: "10m"
+              memory: "20Mi"
           imagePullPolicy: Always
           volumeMounts:
             - name: timestamps-volume
@@ -28,6 +32,10 @@ spec:
                 name: mainapp-configmap
         - name: mainapp-writer
           image: tkasu/hy-kube-mainapp-writer:ex3.02
+          resources:
+            limits:
+              cpu: "10m"
+              memory: "20Mi"
           imagePullPolicy: Always
           volumeMounts:
             - name: timestamps-volume

@@ -17,6 +17,10 @@ spec:
       containers:
         - name: postgres
           image: postgres:14.3
+          resources:
+            limits:
+              cpu: "100m"
+              memory: "250Mi"
           envFrom:
           - configMapRef:
               name: pingpong-postgres-config

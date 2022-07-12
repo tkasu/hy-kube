@@ -27,7 +27,8 @@ Main project for the course, contains subfolders for backend and frontend.
 
 Kubernetes manifests are tested GKE, see infra definition in gcp_resources/ for GKE versions.
 
-For SQL backend, GCP Cloud SQL for Postgres is used to get a fully managed database.
+For SQL backend, GCP Cloud SQL for Postgres is used for project to get a fully managed database.
+For legacy reasons, pingpong is using hosted postgres container as database.
 
 GCP infra can be deployed with:
 

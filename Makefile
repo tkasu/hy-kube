@@ -61,6 +61,11 @@ encrypt-project-secrets:
 	SOPS_AGE_KEY_FILE=$(PWD)/project/backend/manifests/secrets/key.txt \
 	&& $(SOPS) --encrypt postgres-pwd.yaml > postgres-pwd.enc.yaml
 
+encrypt-pingpong-secrets:
+	$(CD) pingpong/manifests/secrets \
+	SOPS_AGE_KEY_FILE=$(PWD)/pingpong/manifests/secrets/key.txt \
+	&& $(SOPS) --encrypt postgres-pwd.yaml > postgres-pwd.enc.yaml
+
 apply-pingpong-kube-preq:
 	$(K) apply -f manifests_global/mainapp-namespace.yaml
 	$(CD) pingpong/manifests/secrets \

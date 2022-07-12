@@ -1,11 +1,11 @@
-# Ex 3.08
+# Ex 3.09
 
 ## Checking out the correct version
 
 To rebuild the same image, first checkout the correct tag:
 
 ```
-git checkout ex3.08
+git checkout ex3.09
 ```
 
 ## Building the applications
@@ -41,7 +41,7 @@ age-keygen -o project/backend/manifests/secrets/key.txt
 
 Update public key in .sops.yaml:
 ```yml
-# project/backend/manifests/secrets/.sops.yaml
+# pingpong/manifests/secrets/.sops.yaml
 creation_rules:
   - encrypted_regex: "^(data)$"
     age: "age1k0upvtn0gwftpep5kxq47xztxj7ulmfhk6t9ha82sd6r5jrjsegsdr0wua" # FIXME
@@ -49,7 +49,7 @@ creation_rules:
 
 Encrypt the key:
 ```
-make encrypt-project-secrets
+make encrypt-pingpong-secrets
 ```
 
 Commit the updated versions of .sops.yaml and postgres-pwd.enc.yaml.
@@ -71,51 +71,51 @@ The following Github secrets are needed:
 
 ### Deploy manifests
 
-Github action will automatically deploy project manifests to Kubernetes.
-
-The namespace of the deployment will be:
-hy-kube-project-{master,develop}
+```
+make apply-pingpong-kube apply-mainapp-kube
+```
 
 ## Testing
 
 ```
-$ kubectl get ingress --namespace hy-kube-project-master
-NAME              CLASS    HOSTS   ADDRESS          PORTS   AGE
-backend-ingress   <none>   *       34.111.105.205   80      19m
+$ kubectl get ingress --namespace mainapp
+NAME               CLASS    HOSTS   ADDRESS          PORTS   AGE
+pingpong-ingress   <none>   *       34.117.104.209   80      13m
 ```
 
-Generating load for frontend:
-```
-$ for i in {1..1000}; do curl 34.117.104.209 ; sleep 0.1; done
-````
-
-frontend-dep resouce usage:
-
-![image info](./frontend_dep_load.png)
-
-Settle for limits:
-
-cpu: 10m
-memory: 30MiB
-
-Generating load for backend:
+Generating load:
 ```
 for i in {1..1000};
   do
-    task=$(echo 'perf test number' $i)
-    payload=$(jq -n --arg task $task '{task: $task}')
-    curl -X POST 34.111.105.205/api/todo -H 'Content-Type: application/json' -d $payload
     echo ''
-    curl 34.111.105.205/api/todos >> /dev/null
+    curl 34.117.104.209/pingpong
     echo ''
+    curl 34.117.104.209/pingpong/pings
+    echo ''
+    curl 34.117.104.209
     sleep 0.1;
   done
 ```
-backend-dep resouce usage:
+mainapp-dep resouce usage:
 
-![image info](./backend_dep_load.png)
+![image info](./mainapp_dep_load.png)
 
-Settle for limits:
+set limits:
+cpu: 20m
+memory: 40Mi
 
+pingpong-dep resouce usage:
+
+![image info](./pingpong_dep_load.png)
+
+set limits:
+cpu: 50m
+memory: 50Mi
+
+postgres-ss resouce usage:
+
+![image info](./postgres_ss_load.png)
+
+set limits:
 cpu: 100m
-memory: 50MiB
+memory: 250Mi
