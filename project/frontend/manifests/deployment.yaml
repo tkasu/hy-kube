@@ -20,4 +20,8 @@ spec:
       containers:
         - name: hy-kube-frontend
           image: IMAGE_FRONTEND
+          resources:
+            limits:
+              cpu: "10m"
+              memory: "30MiB"
           imagePullPolicy: Always

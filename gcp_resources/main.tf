@@ -148,12 +148,18 @@ resource "google_container_node_pool" "primary_preemptible_nodes" {
   location = var.region
   cluster  = google_container_cluster.primary.name
 
-  node_count = 1
+  autoscaling {
+    min_node_count = 1
+    max_node_count = 8
+  }
+
   version    = data.google_container_engine_versions.default.latest_node_version
 
   node_config {
     preemptible  = true
-    machine_type = "e2-medium"
+    # Very tiny nodetype but in this project we run tiny rust-based
+    # microservices with tight cpu-limits
+    machine_type = "e2-micro"
     oauth_scopes = [
       "https://www.googleapis.com/auth/cloud-platform"
     ]

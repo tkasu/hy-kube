@@ -21,6 +21,10 @@ spec:
         - name: hy-kube-backend
           image: IMAGE_BACKEND
           imagePullPolicy: Always
+          resources:
+            limits:
+              cpu: "100m"
+              memory: "50MiB"
           volumeMounts:
             - name: project-volume
               mountPath: /usr/app/files

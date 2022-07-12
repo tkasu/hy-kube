@@ -12,6 +12,10 @@ spec:
           containers:
           - name: randomtask
             image: IMAGE_RANDOMTASK
+            resources:
+              limits:
+                cpu: "50m"
+                memory: "50MiB"
             imagePullPolicy: Always
             env:
               - name: API_URL
