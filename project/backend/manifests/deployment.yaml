@@ -24,7 +24,7 @@ spec:
           resources:
             limits:
               cpu: "100m"
-              memory: "50MiB"
+              memory: "50Mi"
           volumeMounts:
             - name: project-volume
               mountPath: /usr/app/files

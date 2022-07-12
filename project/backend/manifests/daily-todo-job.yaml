@@ -15,7 +15,7 @@ spec:
             resources:
               limits:
                 cpu: "50m"
-                memory: "50MiB"
+                memory: "50Mi"
             imagePullPolicy: Always
             env:
               - name: API_URL
