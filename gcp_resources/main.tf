@@ -123,11 +123,15 @@ resource "google_compute_subnetwork" "gke_private_subnet" {
 
 resource "google_container_cluster" "primary" {
   name     = "${var.project_id}-gke-cluster"
-  location = var.region
+  location = var.default_zone
 
   networking_mode = "VPC_NATIVE"
   network         = google_compute_network.gke_vpc.self_link
   subnetwork      = google_compute_subnetwork.gke_private_subnet.self_link
+
+  cluster_autoscaling {
+    enabled = true
+  }
 
   ip_allocation_policy {
     cluster_ipv4_cidr_block  = "/16"
@@ -158,7 +162,7 @@ resource "google_container_cluster" "primary" {
 
 resource "google_container_node_pool" "primary_preemptible_nodes" {
   name     = "${var.project_id}-node-pool"
-  location = var.region
+  location = var.default_zone
   cluster  = google_container_cluster.primary.name
 
   autoscaling {

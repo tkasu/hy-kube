@@ -17,6 +17,7 @@ PWD = $(shell pwd)
 
 # Global ENV
 export TF_VAR_region=$(GCP_REGION)
+export TF_VAR_default_zone=$(GCP_REGION)-a
 export TF_VAR_project_id=$(GCP_PROJECT_ID)
 
 start-db:
@@ -51,7 +52,7 @@ gcp-infra-format:
 	$(CD) gcp_resources && $(TERRAFORM) fmt
 
 gcp-sync-kubectl-creds:
-	$(GCLOUD) container clusters get-credentials $(GCP_PROJECT_ID)-gke-cluster --zone=$(GCP_REGION)
+	$(GCLOUD) container clusters get-credentials $(GCP_PROJECT_ID)-gke-cluster --zone=$(GCP_REGION)-a
 
 gcp-show-github-sa-key:
 	@$(CD) gcp_resources && $(TERRAFORM) output -raw github_sa_key | base64 -d
