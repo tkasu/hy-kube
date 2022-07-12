@@ -8,5 +8,6 @@ resources:
   - manifests/persistentvolumeclaim.yaml
   - manifests/postgres-config.yaml
   - manifests/service.yaml
+  - manifests/backend-autoscaler.yaml
 generators:
   - postgres-pwd-generator.yaml
