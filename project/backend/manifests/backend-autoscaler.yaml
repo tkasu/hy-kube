@@ -9,5 +9,5 @@ spec:
     kind: Deployment
     name: backend-dep
   minReplicas: 1
-  maxReplicas: 3
+  maxReplicas: 8
   targetCPUUtilizationPercentage: 50
