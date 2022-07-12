@@ -39,7 +39,7 @@ make gcp-infra-up
 And destroyed with:
 
 ```
-make gcp-infra-up
+make gcp-infra-down
 ```
 
 For detailed instructions, see the latest section from part0N folders.
