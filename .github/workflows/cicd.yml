@@ -9,7 +9,8 @@ on:
 env:
   CARGO_TERM_COLOR: always
   PROJECT_ID: ${{ secrets.GKE_PROJECT }}
-  GKE_ZONE: europe-north1
+  GKE_REGION: europe-north1
+  GKE_ZONE: europe-north1-a
   IMAGE_BACKEND: hy-kube-backend
   IMAGE_FRONTEND: hy-kube-frontend
   IMAGE_RANDOMTASK: hy-kube-randomtask
@@ -130,18 +131,18 @@ jobs:
 
     - name: Configure Docker gcr auth
       run: |-
-        gcloud --quiet auth configure-docker $GKE_ZONE-docker.pkg.dev
+        gcloud --quiet auth configure-docker $GKE_REGION-docker.pkg.dev
 
     - name: Build Docker container
       run: |-
         docker build \
           -f Dockerfile.server \
-          --tag "$GKE_ZONE-docker.pkg.dev/$PROJECT_ID/$PROJECT_ID-default/$IMAGE_BACKEND:${GITHUB_REF#refs/heads/}-$GITHUB_SHA" \
+          --tag "$GKE_REGION-docker.pkg.dev/$PROJECT_ID/$PROJECT_ID-default/$IMAGE_BACKEND:${GITHUB_REF#refs/heads/}-$GITHUB_SHA" \
         .
 
     - name: Publish Docker container to GCP Artifact Registry
       run: |-
-        docker push "$GKE_ZONE-docker.pkg.dev/$PROJECT_ID/$PROJECT_ID-default/$IMAGE_BACKEND:${GITHUB_REF#refs/heads/}-$GITHUB_SHA"
+        docker push "$GKE_REGION-docker.pkg.dev/$PROJECT_ID/$PROJECT_ID-default/$IMAGE_BACKEND:${GITHUB_REF#refs/heads/}-$GITHUB_SHA"
 
   build-and-push-project-randomtask:
 
@@ -166,18 +167,18 @@ jobs:
 
     - name: Configure Docker gcr auth
       run: |-
-        gcloud --quiet auth configure-docker $GKE_ZONE-docker.pkg.dev
+        gcloud --quiet auth configure-docker $GKE_REGION-docker.pkg.dev
 
     - name: Build Docker container
       run: |-
         docker build \
           -f Dockerfile.randomtask \
-          --tag "$GKE_ZONE-docker.pkg.dev/$PROJECT_ID/$PROJECT_ID-default/$IMAGE_RANDOMTASK:${GITHUB_REF#refs/heads/}-$GITHUB_SHA" \
+          --tag "$GKE_REGION-docker.pkg.dev/$PROJECT_ID/$PROJECT_ID-default/$IMAGE_RANDOMTASK:${GITHUB_REF#refs/heads/}-$GITHUB_SHA" \
         .
 
     - name: Publish Docker container to GCP Artifact Registry
       run: |-
-        docker push "$GKE_ZONE-docker.pkg.dev/$PROJECT_ID/$PROJECT_ID-default/$IMAGE_RANDOMTASK:${GITHUB_REF#refs/heads/}-$GITHUB_SHA"
+        docker push "$GKE_REGION-docker.pkg.dev/$PROJECT_ID/$PROJECT_ID-default/$IMAGE_RANDOMTASK:${GITHUB_REF#refs/heads/}-$GITHUB_SHA"
 
   build-and-push-project-frontend:
 
@@ -203,18 +204,18 @@ jobs:
 
     - name: Configure Docker gcr auth
       run: |-
-        gcloud --quiet auth configure-docker $GKE_ZONE-docker.pkg.dev
+        gcloud --quiet auth configure-docker $GKE_REGION-docker.pkg.dev
 
     - name: Build Docker container
       run: |-
         docker build \
           -f Dockerfile.kube \
-          --tag "$GKE_ZONE-docker.pkg.dev/$PROJECT_ID/$PROJECT_ID-default/$IMAGE_FRONTEND:${GITHUB_REF#refs/heads/}-$GITHUB_SHA" \
+          --tag "$GKE_REGION-docker.pkg.dev/$PROJECT_ID/$PROJECT_ID-default/$IMAGE_FRONTEND:${GITHUB_REF#refs/heads/}-$GITHUB_SHA" \
         .
 
     - name: Publish Docker container to GCP Artifact Registry
       run: |-
-        docker push "$GKE_ZONE-docker.pkg.dev/$PROJECT_ID/$PROJECT_ID-default/$IMAGE_FRONTEND:${GITHUB_REF#refs/heads/}-$GITHUB_SHA"
+        docker push "$GKE_REGION-docker.pkg.dev/$PROJECT_ID/$PROJECT_ID-default/$IMAGE_FRONTEND:${GITHUB_REF#refs/heads/}-$GITHUB_SHA"
 
   deploy-project-to-kubernetes:
     needs: [
@@ -263,9 +264,9 @@ jobs:
 
         kustomize edit set namespace hy-kube-project-${GITHUB_REF#refs/heads/}
         kustomize edit set image \
-          IMAGE_BACKEND=$GKE_ZONE-docker.pkg.dev/$PROJECT_ID/$PROJECT_ID-default/$IMAGE_BACKEND:${GITHUB_REF#refs/heads/}-$GITHUB_SHA \
-          IMAGE_FRONTEND=$GKE_ZONE-docker.pkg.dev/$PROJECT_ID/$PROJECT_ID-default/$IMAGE_FRONTEND:${GITHUB_REF#refs/heads/}-$GITHUB_SHA \
-          IMAGE_RANDOMTASK=$GKE_ZONE-docker.pkg.dev/$PROJECT_ID/$PROJECT_ID-default/$IMAGE_RANDOMTASK:${GITHUB_REF#refs/heads/}-$GITHUB_SHA
+          IMAGE_BACKEND=$GKE_REGION-docker.pkg.dev/$PROJECT_ID/$PROJECT_ID-default/$IMAGE_BACKEND:${GITHUB_REF#refs/heads/}-$GITHUB_SHA \
+          IMAGE_FRONTEND=$GKE_REGION-docker.pkg.dev/$PROJECT_ID/$PROJECT_ID-default/$IMAGE_FRONTEND:${GITHUB_REF#refs/heads/}-$GITHUB_SHA \
+          IMAGE_RANDOMTASK=$GKE_REGION-docker.pkg.dev/$PROJECT_ID/$PROJECT_ID-default/$IMAGE_RANDOMTASK:${GITHUB_REF#refs/heads/}-$GITHUB_SHA
         kubectl kustomize --enable-alpha-plugins . | kubectl apply -f -
 
         POSTGRES_PASS=$(kubectl get secrets/postgres-password --namespace hy-kube-project-${GITHUB_REF#refs/heads/} --template {{.data.PASSWORD}} | base64 -d)
