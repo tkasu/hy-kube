@@ -134,6 +134,19 @@ resource "google_container_cluster" "primary" {
     services_ipv4_cidr_block = "/16"
   }
 
+  logging_config {
+    enable_components = [
+      "SYSTEM_COMPONENTS",
+      "WORKLOADS",
+    ]
+  }
+
+  monitoring_config {
+    enable_components = [
+      "SYSTEM_COMPONENTS",
+    ]
+  }
+
   # We can't create a cluster with no node pool defined, but we want to only use
   # separately managed node pools. So we create the smallest possible default
   # node pool and immediately delete it.
@@ -153,10 +166,10 @@ resource "google_container_node_pool" "primary_preemptible_nodes" {
     max_node_count = 8
   }
 
-  version    = data.google_container_engine_versions.default.latest_node_version
+  version = data.google_container_engine_versions.default.latest_node_version
 
   node_config {
-    preemptible  = true
+    preemptible = true
     # Very tiny nodetype but in this project we run tiny rust-based
     # microservices with tight cpu-limits
     machine_type = "e2-micro"
