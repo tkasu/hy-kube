@@ -95,7 +95,7 @@ resource "google_sql_database_instance" "project_db" {
   deletion_protection = false
 
   settings {
-    tier = "db-f1-micro"
+    tier = "db-g1-small"
 
     ip_configuration {
       ipv4_enabled    = false
