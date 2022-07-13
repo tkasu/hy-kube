@@ -4,10 +4,12 @@ resources:
   - manifests/daily-todo-job.yaml
   - manifests/deployment-config.yaml
   - manifests/deployment.yaml
+  - manifests/deployment-imagesync.yaml
   - manifests/ingress.yaml
   - manifests/persistentvolumeclaim.yaml
   - manifests/postgres-config.yaml
   - manifests/service.yaml
+  - manifests/service-imagesync.yaml
   - manifests/backend-autoscaler.yaml
 generators:
   - postgres-pwd-generator.yaml

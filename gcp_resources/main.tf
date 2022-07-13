@@ -129,10 +129,6 @@ resource "google_container_cluster" "primary" {
   network         = google_compute_network.gke_vpc.self_link
   subnetwork      = google_compute_subnetwork.gke_private_subnet.self_link
 
-  cluster_autoscaling {
-    enabled = true
-  }
-
   ip_allocation_policy {
     cluster_ipv4_cidr_block  = "/16"
     services_ipv4_cidr_block = "/16"

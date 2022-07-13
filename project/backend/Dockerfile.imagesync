@@ -1,0 +1,13 @@
+FROM rust:1.61.0-buster as builder
+WORKDIR /usr/src/backend
+COPY . .
+RUN cargo build --release
+
+FROM debian:buster-slim
+WORKDIR /usr/app/backend
+COPY --from=builder /usr/src/backend/target/release/imagesync .
+COPY --from=builder /usr/src/backend/imagesync/public/ ./public/
+COPY --from=builder /usr/src/backend/imagesync/Rocket.toml ./Rocket.toml
+RUN apt-get update && apt-get install -y libssl-dev ca-certificates
+RUN apt-get update && apt-get install libpq5 -y
+CMD ["./imagesync"]

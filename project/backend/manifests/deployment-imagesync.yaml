@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: hy-kube-project
+  name: backend-imagesync-dep
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend-imagesync
+  template:
+    metadata:
+      labels:
+        app: backend-imagesync
+    spec:
+      volumes:
+        - name: project-volume
+          persistentVolumeClaim:
+            claimName: project-claim
+      containers:
+        - name: hy-kube-backend
+          image: IMAGE_BACKEND_IMAGESYNC
+          imagePullPolicy: Always
+          resources:
+            limits:
+              cpu: "100m"
+              memory: "50Mi"
+          volumeMounts:
+            - name: project-volume
+              mountPath: /usr/app/files
+          envFrom:
+          - configMapRef:
+              name: backend-config

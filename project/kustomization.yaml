@@ -9,5 +9,7 @@ images:
     newName: europe-north1-docker.pkg.dev/dwk-gke-354607/dwk-gke-354607-default/hy-kube-frontend
   - name: IMAGE_BACKEND
     newName: europe-north1-docker.pkg.dev/dwk-gke-354607/dwk-gke-354607-default/hy-kube-backend
+  - name: IMAGE_BACKEND_IMAGESYNC
+    newName: europe-north1-docker.pkg.dev/dwk-gke-354607/dwk-gke-354607-default/hy-kube-backend-imagesync
   - name: IMAGE_RANDOMTASK
     newName: europe-north1-docker.pkg.dev/dwk-gke-354607/dwk-gke-354607-default/hy-kube-randomtask

@@ -11,4 +11,6 @@ data:
   ROCKET_LOG_LEVEL: "normal"
   IMAGE_CACHE_PATH: /usr/app/files/img.jpg
   IMAGE_STATE_PATH: /usr/app/files/img_state.json
-  IMAGE_UPDATE_INTERVAL: "86400" # Seconds in a day
+  IMAGE_UPDATE_INTERVAL: "86400" # Seconds in a day, update interval for imagesync master
+  IMAGE_SYNC_INTERVAL: "300"  # Seconds in 5min, sync interval for backend servers
+  IMAGE_SYNC_URL: "http://backend-imagesync-svc/daily_photo"
