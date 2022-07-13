@@ -113,3 +113,12 @@ delete-mainapp-kube:
 
 delete-project-kube:
 	$(K) delete namespace hy-kube-project && $(K) create namespace hy-kube-project
+
+loadtest-venv:
+	$(CD) load_testing && \
+	python3 -m venv .venv && \
+	source .venv/bin/activate && \
+	python -m pip install -r requirements.txt
+
+loadtest-start-server: loadtest-venv
+	$(CD) load_testing && source .venv/bin/activate && python -m locust
