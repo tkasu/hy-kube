@@ -33,6 +33,8 @@ pub async fn get_todos(db: &ProjectDbConn) -> TodoList {
         "\
         SELECT task \
         FROM todo \
+        ORDER BY id DESC \
+        LIMIT 50 \
         ",
     )
     .fetch_all(&db.0)
