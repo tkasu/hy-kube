@@ -1,3 +1,5 @@
-[development]
+[debug]
+workers = 1
 
-[production]
+[release]
+workers = 4
