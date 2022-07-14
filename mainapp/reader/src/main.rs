@@ -41,14 +41,14 @@ async fn main() {
     let app_state = Arc::new(Mutex::new(app_state));
     let state_for_update = app_state.clone();
 
-    let ping_state = PingState::new();
+    let ping_state = PingState::new(pingpong_endpoint_url);
     let ping_state = Arc::new(ping_state);
     let ping_state_for_update = ping_state.clone();
 
     let (file_input_sender, file_input_receiver): (Sender<String>, Receiver<String>) = channel();
 
     thread::spawn(move || {
-        update_pings(pingpong_endpoint_url, ping_state_for_update);
+        update_pings(ping_state_for_update);
     });
 
     thread::spawn(move || {

@@ -43,17 +43,19 @@ struct PingsApiResponse {
 
 pub struct PingState {
     count: Option<AtomicUsize>,
+    api_url: String,
 }
 
 impl PingState {
-    pub fn new() -> Self {
+    pub fn new(api_url: String) -> Self {
         Self {
             count: Some(AtomicUsize::new(0)),
+            api_url,
         }
     }
 
-    fn update_ping_state(&self, api_url: &str) -> Result<(), Box<dyn std::error::Error>> {
-        let api_response = Self::read_ping_count(api_url)?;
+    fn update_ping_state(&self) -> Result<(), Box<dyn std::error::Error>> {
+        let api_response = Self::read_ping_count(&self)?;
         self.update_ping_count(api_response.ping_count);
         Ok(())
     }
@@ -62,8 +64,8 @@ impl PingState {
         self.count.as_ref().unwrap().store(new, Ordering::Relaxed);
     }
 
-    fn read_ping_count(api_url: &str) -> Result<PingsApiResponse, Box<dyn std::error::Error>> {
-        let resp = reqwest::blocking::get(api_url)?;
+    fn read_ping_count(&self) -> Result<PingsApiResponse, Box<dyn std::error::Error>> {
+        let resp = reqwest::blocking::get(&self.api_url)?;
         let ping_status = resp.json::<PingsApiResponse>()?;
         Ok(ping_status)
     }
@@ -100,11 +102,10 @@ pub fn read_and_send(file_path: String, sender: Sender<String>) {
     }
 }
 
-pub fn update_pings(api_url: String, state: Arc<PingState>) {
-    let api_url = api_url.as_str();
+pub fn update_pings(state: Arc<PingState>) {
     let update_freq = Duration::from_secs(2);
     loop {
-        state.update_ping_state(api_url).unwrap_or_else(|err| {
+        state.update_ping_state().unwrap_or_else(|err| {
             println!("WARNING: Problem updating ping count: {}", err);
         });
         sleep(update_freq);
@@ -144,12 +145,22 @@ fn get_default(
     resp
 }
 
+#[get("/healthx")]
+fn health_integration(
+    ping_state: &State<Arc<PingState>>,
+) -> Option<&'static str> {
+    match &ping_state.read_ping_count() {
+        Ok(_) => Some("Ok"),
+        _ => None,
+    }
+}
+
 pub fn build_web_server(
     app_state: Arc<Mutex<AppState>>,
     ping_state: Arc<PingState>,
 ) -> Rocket<Build> {
     rocket::build()
-        .mount("/", routes![get_default])
+        .mount("/", routes![get_default, health_integration])
         .manage(app_state)
         .manage(ping_state)
 }

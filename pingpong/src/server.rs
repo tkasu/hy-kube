@@ -12,6 +12,15 @@ async fn healthcheck() -> &'static str {
     "Ok"
 }
 
+#[get("/healthdb")]
+async fn healthcheck_db(db: &PingPongDbConn) -> Option<&'static str> {
+    let query = db::get_ping(db).await;
+    match query {
+        Ok(_) => Some("Ok"),
+        _ => None,
+    }
+}
+
 #[get("/pingpong")]
 async fn pong(db: &PingPongDbConn) -> String {
     let old_count = db::get_ping(db).await.unwrap();
@@ -34,5 +43,5 @@ pub fn build_web_server() -> Rocket<Build> {
             "DB Migrations and state init.",
             db::run_migrations_and_init_state,
         ))
-        .mount("/", routes![healthcheck, pong, pings])
+        .mount("/", routes![healthcheck, healthcheck_db, pong, pings])
 }

@@ -36,3 +36,9 @@ spec:
               value: postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@pingpong-db/$(POSTGRES_DB)
             - name: ROCKET_DATABASES
               value: '{pingpongdb={url="$(DATABASE_URL)"}}'
+          readinessProbe:
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            httpGet:
+               path: /healthdb
+               port: $(ROCKET_PORT)
