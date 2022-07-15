@@ -28,7 +28,7 @@ spec:
               path: /healthx
               port: 80
           livenessProbe:
-            initialDelaySeconds: 20
+            initialDelaySeconds: 40
             periodSeconds: 10
             httpGet:
               path: /healthx
