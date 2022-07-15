@@ -43,3 +43,18 @@ pub async fn get_todos(db: &ProjectDbConn) -> TodoList {
 
     TodoList { todos }
 }
+
+pub async fn get_latest_todo_res(db: &ProjectDbConn) -> Result<Todo, sqlx::Error> {
+    let todo_res = sqlx::query_as::<_, Todo>(
+        "\
+        SELECT task \
+        FROM todo \
+        ORDER BY id DESC \
+        LIMIT 1 \
+        ",
+    )
+    .fetch_one(&db.0)
+    .await;
+
+    todo_res
+}

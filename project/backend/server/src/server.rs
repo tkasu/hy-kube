@@ -44,6 +44,7 @@ impl ReqDetails<'_> {
 #[derive(Serialize, Deserialize, Clone, Debug)]
 enum RespErr {
     BadRequest(String),
+    SqlError(String),
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
@@ -53,23 +54,51 @@ struct ErrDetails {
 }
 
 impl ErrDetails {
-    fn from_bad_req(err: &status::BadRequest<String>) -> Self {
-        let resp_err = RespErr::BadRequest(err.clone().0.unwrap());
-        Self {
-            detail_type: "error",
-            err: resp_err,
-        }
-    }
-
     fn log(&self) {
         let json = serde_json::json!(self).to_string();
         println!("{:?}", json)
     }
 }
 
+impl From<&status::BadRequest<String>> for ErrDetails {
+    fn from(err: &status::BadRequest<String>) -> Self {
+        let resp_err = RespErr::BadRequest(err.clone().0.unwrap());
+        Self {
+            detail_type: "error",
+            err: resp_err,
+        }
+    }
+}
+
+impl From<sqlx::Error> for ErrDetails {
+    fn from(error: sqlx::Error) -> Self {
+        Self {
+            detail_type: "error",
+            err: RespErr::SqlError(error.to_string()),
+        }
+    }
+}
+
 #[get("/")]
 async fn healthcheck() -> &'static str {
     "Ok"
+}
+
+#[derive(Responder)]
+#[response(status = 500, content_type = "text")]
+struct FailedHealthCheck(&'static str);
+
+#[get("/healthx")]
+async fn healthcheck_integration(db_conn: &ProjectDbConn, route: &Route, ip: IpAddr) -> Result<&'static str, FailedHealthCheck> {
+    ReqDetails::new(route, ip, None).log();
+    match db::get_latest_todo_res(db_conn).await {
+        Ok(_) => Ok("Ok"),
+        Err(sqlx::Error::RowNotFound) => Ok("Ok"),
+        Err(err) => {
+            ErrDetails::from(err).log();
+            Err(FailedHealthCheck("Database healthcheck failed."))
+        },
+    }
 }
 
 #[get("/api/daily_photo")]
@@ -100,8 +129,7 @@ async fn new_todo<'a>(
     if todo_len > 140 {
         let error_msg = format!("Todo's length: {} is over the limit 140.", todo_len);
         let err_status = status::BadRequest(Some(error_msg));
-        //println!("Err Resp: {:?}", err_status);
-        ErrDetails::from_bad_req(&err_status).log();
+        ErrDetails::from(&err_status).log();
         return Err(err_status);
     }
     db::add_todo(db_conn, todo.clone().0).await;
@@ -131,7 +159,7 @@ pub fn build_web_server() -> Rocket<Build> {
     let db_conn = ProjectDbConn::init();
 
     rocket::build()
-        .mount("/", routes![healthcheck, daily_photo, todos, new_todo])
+        .mount("/", routes![healthcheck, healthcheck_integration, daily_photo, todos, new_todo])
         .attach(cors)
         .attach(db_conn)
         .attach(AdHoc::try_on_ignite("DB Migrations", db::run_migrations))
