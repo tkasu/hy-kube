@@ -123,6 +123,9 @@ resource "google_compute_subnetwork" "gke_private_subnet" {
 }
 
 resource "google_container_cluster" "primary" {
+  # Beta provider needed as of 2022-07-16 for managed prometheus
+  provider = google-beta
+
   name     = "${var.project_id}-gke-cluster"
   location = var.default_zone
 
@@ -146,6 +149,10 @@ resource "google_container_cluster" "primary" {
     enable_components = [
       "SYSTEM_COMPONENTS",
     ]
+
+    managed_prometheus {
+      enabled = true
+    }
   }
 
   # We can't create a cluster with no node pool defined, but we want to only use
