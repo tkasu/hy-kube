@@ -1,0 +1,12 @@
+apiVersion: monitoring.googleapis.com/v1
+kind: PodMonitoring
+metadata:
+  namespace: hy-kube-project
+  name: backend-dep-monitor
+spec:
+  selector:
+    matchLabels:
+      app: backend
+  endpoints:
+  - port: 3000
+    interval: 30s

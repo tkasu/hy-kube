@@ -11,5 +11,6 @@ resources:
   - manifests/service.yaml
   - manifests/service-imagesync.yaml
   - manifests/backend-autoscaler.yaml
+  - manifests/monitor-deployment.yaml
 generators:
   - postgres-pwd-generator.yaml

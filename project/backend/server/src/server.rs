@@ -10,6 +10,7 @@ use rocket::response::status;
 use rocket::serde::json::Json;
 use rocket::{Build, Rocket, Route};
 use rocket_cors::{AllowedHeaders, AllowedOrigins, Cors};
+use rocket_prometheus::PrometheusMetrics;
 use rocket_db_pools::Database;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -157,10 +158,13 @@ fn get_cors() -> Cors {
 pub fn build_web_server() -> Rocket<Build> {
     let cors = get_cors();
     let db_conn = ProjectDbConn::init();
+    let prometheus = PrometheusMetrics::new();
 
     rocket::build()
         .mount("/", routes![healthcheck, healthcheck_integration, daily_photo, todos, new_todo])
         .attach(cors)
         .attach(db_conn)
+        .attach(prometheus.clone())
+        .mount("/metrics", prometheus)
         .attach(AdHoc::try_on_ignite("DB Migrations", db::run_migrations))
 }

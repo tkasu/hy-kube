@@ -28,6 +28,18 @@ stop-db:
 	$(DOCKER) stop pingpong-postgres
 	$(DOCKER) rm pingpong-postgres
 
+start-prom:
+	$(DOCKER) run \
+		-p 9090:9090 \
+		-v $(PWD)/prometheus_local.yml:/etc/prometheus/prometheus.yml \
+		--name prometheus-hy-kube \
+		-d \
+		prom/prometheus
+
+stop-prom:
+	$(DOCKER) stop prometheus-hy-kube
+	$(DOCKER) rm prometheus-hy-kube
+
 run-pingpong: stop-db start-db
 	$(CD) pingpong && \
 	DATABASE_URL=$(POSTGRES_URL) ROCKET_DATABASES='{pingpongdb={url="$(POSTGRES_URL)"}}' cargo run

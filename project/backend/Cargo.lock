@@ -1196,6 +1196,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "prometheus"
+version = "0.13.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cface98dfa6d645ea4c789839f176e4b072265d085bfcc48eaa8d137f58d3c39"
+dependencies = [
+ "cfg-if",
+ "fnv",
+ "lazy_static",
+ "memchr",
+ "parking_lot 0.12.0",
+ "thiserror",
+]
+
+[[package]]
 name = "quote"
 version = "1.0.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1490,6 +1504,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "rocket_prometheus"
+version = "0.10.0-rc.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e3e70efcf6b0234723d0d295b95d64283ed02bb98a8a3f0c8c7ebb5b8da69165"
+dependencies = [
+ "prometheus",
+ "rocket",
+]
+
+[[package]]
 name = "rustls"
 version = "0.19.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1622,6 +1646,7 @@ dependencies = [
  "rocket",
  "rocket_cors",
  "rocket_db_pools",
+ "rocket_prometheus",
  "serde",
  "serde_json",
  "sqlx",
