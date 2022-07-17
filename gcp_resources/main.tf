@@ -171,7 +171,7 @@ resource "google_container_node_pool" "primary_preemptible_nodes" {
 
   autoscaling {
     min_node_count = 1
-    max_node_count = 8
+    max_node_count = 4
   }
 
   version = data.google_container_engine_versions.default.latest_node_version
@@ -180,7 +180,7 @@ resource "google_container_node_pool" "primary_preemptible_nodes" {
     preemptible = true
     # Very tiny nodetype but in this project we run tiny rust-based
     # microservices with tight cpu-limits
-    machine_type = "e2-micro"
+    machine_type = "e2-medium"
     oauth_scopes = [
       "https://www.googleapis.com/auth/cloud-platform"
     ]
